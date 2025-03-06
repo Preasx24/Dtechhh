@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internet Speed Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        #speed-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .speed-result {
+            font-size: 18px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        #loading {
+            font-size: 18px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div id="speed-container">
+    <h1>Internet Speed Test</h1>
+    <button onclick="runSpeedTest()">Test Speed</button>
+    <p id="loading">Testing... Please wait.</p>
+    <div id="download-speed" class="speed-result"></div>
+    <div id="download-time" class="speed-result"></div>
+</div>
+
+<script>
+    async function runSpeedTest() {
+        // Show loading message
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('download-speed').style.display = 'none';
+        document.getElementById('download-time').style.display = 'none';
+
+        try {
+            // Fetch the speed data from the OpenSpeedTest API
+            const response = await fetch('https://www.openspeedtest.com/api/v1/speedtest');
+            const data = await response.json();
+
+            if (response.ok) {
+                const downloadSpeedMbps = data.downloadSpeed;
+
+                // Calculate estimated download time for 1GB
+                const downloadTime = (1000 / downloadSpeedMbps).toFixed(2); // Time for 1GB in seconds
+
+                // Hide loading and display results
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('download-speed').textContent = `Download Speed: ${downloadSpeedMbps} Mbps`;
+                document.getElementById('download-time').textContent = `Estimated time to download 1GB: ${downloadTime} seconds`;
+
+                document.getElementById('download-speed').style.display = 'block';
+                document.getElementById('download-time').style.display = 'block';
+            } else {
+                throw new Error('Failed to retrieve speed test data');
+            }
+        } catch (error) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('download-speed').style.display = 'none';
+            document.getElementById('download-time').textContent = 'Error: Unable to retrieve speed test data';
+            document.getElementById('download-time').style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>
