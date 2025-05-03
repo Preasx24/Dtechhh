@@ -1,251 +1,95 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D-TECH Challenge Game</title>
-   
-
+    <meta name="description" content="Discover the mission and impact of @Preasx24, the founder of DTECH — an ecosystem empowering students through technology, innovation, and collaboration.">
+    <meta name="keywords" content="Preasx24, DTECH, student marketplace, tech innovation, DTECH Services, DTECH Info, DTECH HQ, DTECH General, digital empowerment, student tech platform">
+    <meta name="author" content="Preasx24">
+    <title>Meet @Preasx24 | Founder of DTECH</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #121212;
-            color: #fff;
             margin: 0;
             padding: 0;
+            background: #0D0D0D;
+            color: #fff;
+            text-align: center;
         }
-        h1 {
-            margin-top: 20px;
+        header {
+            background: #1E1E2E;
+            padding: 20px;
+            font-size: 26px;
+            font-weight: bold;
+            text-transform: uppercase;
         }
-        #gameArea {
-            width: 90%;
-            height: 60vh;
-            margin: 20px auto;
-            position: relative;
-            background-color: #1f1f1f;
-            border: 2px solid #444;
-            overflow: hidden;
+        .section {
+            margin: 30px auto;
+            padding: 20px;
+            max-width: 800px;
+            background: #1A1A1A;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
-        #giftBox {
-            font-size: 40px;
-            position: absolute;
-            cursor: pointer;
-            animation: bounce 1s infinite;
+        .section h2 {
+            color: #00FF99;
+            margin-bottom: 15px;
         }
-        #score, #health, #timer {
-            font-size: 20px;
-            margin: 10px 0;
-        }
-        #stopButton {
-            margin: 20px;
-            padding: 10px 20px;
+        .content {
             font-size: 16px;
-            cursor: pointer;
-        }
-        .leaderboard {
-            margin: 20px auto;
-            width: 90%;
-            max-width: 400px;
+            line-height: 1.6;
             text-align: left;
         }
-        .leaderboard h3 {
-            text-align: center;
+        a.telegram-link {
+            color: #00FF99;
+            text-decoration: none;
+            font-weight: bold;
         }
-        .leaderboard ol {
-            padding-left: 20px;
+        a.telegram-link:hover {
+            text-decoration: underline;
         }
-        #popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #2a2a2a;
-            padding: 30px;
-            border: 2px solid #444;
-            z-index: 1000;
-            text-align: center;
-            max-width: 400px;
-            width: 80%;
-            border-radius: 10px;
-        }
-        #popup h2 {
-            margin: 10px 0;
-        }
-        #popup p {
+        footer {
+            margin-top: 40px;
+            padding: 10px;
             font-size: 14px;
-            margin: 10px 0;
-        }
-        #popup button {
-            margin-top: 10px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
+            background: #1E1E2E;
         }
     </style>
 </head>
 <body>
-    <h1>D-TECH Giveaway Challenge</h1>
-    <p>Click the 🎁 to score points! Avoid clicking elsewhere or you'll lose health!</p>
-    <div id="score">Score: 0</div>
-    <div id="health">Health: ❤️❤️❤️</div>
-    <div id="timer">Time: 30s</div>
-    <button id="stopButton">Stop Game & Submit Score</button>
-    <div id="gameArea">
-        <div id="giftBox">🎁</div>
+    <header>
+        @Preasx24 – Visionary Behind DTECH
+    </header><div class="section">
+    <h2>Meet @Preasx24</h2>
+    <div class="content">
+        <p>@Preasx24 is the founder and creative leader behind <strong>@DTECH</strong> — a groundbreaking ecosystem that integrates student empowerment, innovation, and tech-driven solutions. Through platforms like <strong>DTECH Services</strong>, <strong>DTECH Info</strong>, <strong>DTECH HQ</strong>, and <strong>DTECH General</strong>, @Preasx24 is changing the way students connect with digital tools, opportunities, and each other.</p>
+        <p>As a rising name in South African digital entrepreneurship, @Preasx24 has positioned <strong>DTECH</strong> not just as a brand, but as a community-driven initiative where young people, especially students, can thrive. From online marketplaces to education hubs and software innovation, @Preasx24 ensures each platform offers real-world value and long-term impact.</p>
     </div>
-    
-    <div class="leaderboard">
-        <h3>Leaderboard</h3>
-        <ol id="leaderboardList"></ol>
+</div>
+
+<div class="section">
+    <h2>DTECH Ecosystem</h2>
+    <div class="content">
+        <ul>
+            <li><strong>DTECH Services</strong> – <a href="https://www.dtech-services.co.za" target="_blank">www.dtech-services.co.za</a><br>Student marketplace for buying, selling, and renting items or services.</li>
+            <li><strong>DTECH Info</strong> – <a href="https://info.dtech24.co.za" target="_blank">info.dtech24.co.za</a><br>Resource hub for tech, education, and practical tools.</li>
+            <li><strong>DTECH HQ</strong> – <a href="https://www.dtech24.co.za" target="_blank">www.dtech24.co.za</a><br>Innovation lab showcasing DTECH's technical capabilities and software products.</li>
+            <li><strong>DTECH General</strong> – <a href="https://www.dtechhq.co.za" target="_blank">www.dtechhq.co.za</a><br>Central portal summarizing DTECH’s mission and all related services.</li>
+        </ul>
     </div>
-    
-    <footer>
-        <p>Game hosted by <a href="https://t.me/PREASX24" target="_blank" style="color: #4caf50;">@PREASX24</a></p>
-    </footer>
+</div>
 
-    <div id="popup">
-        <h2>Game Over!</h2>
-        <p id="finalScore"></p>
-        <p id="scoreToBeat"></p>
-        <p id="screenshotPrompt"></p>
-        <p>📸 Take a screenshot and send it to <a href="https://t.me/PREASX24" target="_blank">@PREASX24</a> for your chance to win an amazing prize on Sunday! 🌹</p>
-        <button onclick="closePopup()">Close</button>
+<div class="section">
+    <h2>Connect with @Preasx24</h2>
+    <div class="content">
+        <p>Follow or message @Preasx24 directly on Telegram:<br>
+        <a href="https://t.me/PREASX24" class="telegram-link">@PREASX24</a></p>
+        <p>Stay up to date with DTECH's growth and new student-focused innovations led by @Preasx24.</p>
     </div>
+</div>
 
-    <script>
-        const giftBox = document.getElementById('giftBox');
-        const scoreDisplay = document.getElementById('score');
-        const healthDisplay = document.getElementById('health');
-        const timerDisplay = document.getElementById('timer');
-        const stopButton = document.getElementById('stopButton');
-        const gameArea = document.getElementById('gameArea');
-        const leaderboardList = document.getElementById('leaderboardList');
-        const popup = document.getElementById('popup');
-        const finalScoreDisplay = document.getElementById('finalScore');
-        const scoreToBeatDisplay = document.getElementById('scoreToBeat');
-        const screenshotPrompt = document.getElementById('screenshotPrompt');
+<footer>
+    © 2025 DTECH by @Preasx24. All Rights Reserved.
+</footer>
 
-        let score = 0;
-        let health = 3;
-        let timeLeft = 30;
-        let gameActive = true;
-        let currentScoreToBeat = 470; // Set this dynamically on the previous page
-        let boxSpeed = 1; // Initial slower speed
-        let timerInterval, boxMovementInterval;
-        let clickCount = 0; // Track successful clicks
-
-        // Move the gift box randomly
-        function moveGiftBox() {
-            const x = Math.random() * (gameArea.offsetWidth - giftBox.offsetWidth);
-            const y = Math.random() * (gameArea.offsetHeight - giftBox.offsetHeight);
-            giftBox.style.left = `${x}px`;
-            giftBox.style.top = `${y}px`;
-        }
-
-        // Update health display
-        function updateHealth() {
-            healthDisplay.textContent = `Health: ${'❤️'.repeat(health)}`;
-            if (health === 0) {
-                endGame();
-            }
-        }
-
-        // Handle clicking the gift
-        giftBox.addEventListener('click', (event) => {
-            if (gameActive) {
-                score++;
-                scoreDisplay.textContent = `Score: ${score}`;
-                clickCount++;
-
-                // Speed increase after every 10 successful clicks (evenly distributed)
-                if (clickCount % 10 === 0) {
-                    boxSpeed += 0.05;  // Slight increase in speed
-                }
-
-                moveGiftBox();
-
-                // Add more time to the timer
-                timeLeft += 2;
-                timerDisplay.textContent = `Time: ${timeLeft}s`;
-            }
-            event.stopPropagation(); // Prevent click from propagating to gameArea
-        });
-
-        // Handle clicking anywhere else in the game area
-        gameArea.addEventListener('click', () => {
-            if (gameActive) {
-                health--;
-                updateHealth();
-            }
-        });
-
-        // Start the timer countdown
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                if (gameActive) {
-                    timeLeft--;
-                    timerDisplay.textContent = `Time: ${timeLeft}s`;
-                    if (timeLeft <= 0) {
-                        endGame();
-                    }
-                }
-            }, 1000);
-        }
-
-        // Stop game and save score
-        stopButton.addEventListener('click', () => {
-            if (gameActive) {
-                endGame();
-            }
-        });
-
-        // End Game and Show Popup
-        function endGame() {
-            gameActive = false;
-            giftBox.style.display = 'none';
-            stopButton.disabled = true;
-            clearInterval(timerInterval);
-            clearInterval(boxMovementInterval);
-
-            finalScoreDisplay.textContent = `Your Final Score: ${score}`;
-            scoreToBeatDisplay.textContent = `Score to Beat: ${currentScoreToBeat}`;
-            
-            // Check if the score is greater than the score to beat
-            if (score > currentScoreToBeat) {
-                screenshotPrompt.textContent = "Congratulations! Your score is higher than the current score to beat. Take a screenshot and send it to @PREASX24 for a chance to win!";
-            } else {
-                screenshotPrompt.textContent = "Keep trying! Your score did not beat the current score to beat.";
-            }
-
-            popup.style.display = 'block';
-        }
-
-        // Close Popup
-        function closePopup() {
-            popup.style.display = 'none';
-        }
-
-        // Start the game
-        moveGiftBox();
-        startTimer();
-        boxMovementInterval = setInterval(moveGiftBox, 1000 / boxSpeed);
-    </script>
-
-<!-- PopCash Ad Script -->
-<script type="text/javascript">
-   var uid = '484938';
-   var wid = '731769';
-   var pop_tag = document.createElement('script');pop_tag.src='//cdn.popcash.net/show.js';document.body.appendChild(pop_tag);
-   pop_tag.onerror = function() {pop_tag = document.createElement('script');pop_tag.src='//cdn2.popcash.net/show.js';document.body.appendChild(pop_tag)};
-</script>
 </body>
 </html>
