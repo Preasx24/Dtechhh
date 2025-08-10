@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DTech Marketplace | Buy, Sell & Rent Services</title>
+  <meta name="description" content="DTech Marketplace - Your platform for buying, selling, and renting items with premium services.">
+  <meta name="author" content="@preasx24">
+  <meta name="copyright" content="DTech Marketplace 2025">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #3f37c9;
+      --accent: #f72585;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --success: #4cc9f0;
+      --warning: #f8961e;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f7ff;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header Styles */
+    .main-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 1.5rem 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .logo-img {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+    }
+    
+    .brand-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .brand-tagline {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #e5177b;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(247, 37, 133, 0.3);
+    }
+    
+    .btn-secondary {
+      background-color: var(--warning);
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #e0861b;
+      transform: translateY(-2px);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid white;
+      color: white;
+    }
+    
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Quick Access Bar */
+    .quick-access {
+      background-color: white;
+      padding: 1rem 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .quick-access-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    
+    .quick-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+    
+    .quick-link:hover {
+      background-color: rgba(67, 97, 238, 0.1);
+    }
+    
+    .quick-link i {
+      margin-right: 8px;
+    }
+    
+    /* Hero Section */
+    .hero {
+      padding: 4rem 0;
+      text-align: center;
+      background: linear-gradient(rgba(245, 247, 255, 0.9), rgba(245, 247, 255, 0.9)), 
+                  url('https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+    }
+    
+    .hero-title {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+    
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--gray);
+      max-width: 700px;
+      margin: 0 auto 2rem;
+    }
+    
+    /* Services Grid */
+    .services {
+      padding: 3rem 0;
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      font-size: 2rem;
+      color: var(--dark);
+      position: relative;
+    }
+    
+    .section-title:after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: var(--accent);
+      margin: 0.8rem auto 0;
+      border-radius: 2px;
+    }
+    
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    
+    .service-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .service-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+      height: 160px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3rem;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    .card-title {
+      font-size: 1.3rem;
+      margin-bottom: 0.8rem;
+      color: var(--dark);
+    }
+    
+    .card-text {
+      color: var(--gray);
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+    
+    /* Contact Section */
+    .contact-section {
+      background-color: white;
+      padding: 3rem 0;
+      border-radius: 12px;
+      margin: 3rem 0;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .contact-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+    
+    .contact-details {
+      margin-bottom: 1.5rem;
+    }
+    
+    .contact-item {
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .contact-item i {
+      color: var(--primary);
+    }
+    
+    /* Footer */
+    .main-footer {
+      background-color: var(--dark);
+      color: white;
+      padding: 3rem 0 1.5rem;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-logo-img {
+      width: 40px;
+    }
+    
+    .footer-logo-text {
+      font-weight: 700;
+    }
+    
+    .footer-about {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      line-height: 1.6;
+    }
+    
+    .footer-links h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    .footer-links h3:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 40px;
+      height: 2px;
+      background: var(--accent);
+    }
+    
+    .footer-links ul {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      font-size: 0.9rem;
+    }
+    
+    .footer-links a:hover {
+      color: white;
+    }
+    
+    .footer-bottom {
+      text-align: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .quick-access-links {
+        flex-wrap: wrap;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+      }
+      
+      .hero-title {
+        font-size: 1.8rem;
+      }
+      
+      .section-title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <header class="main-header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo-container">
+          <img src="logo.png" alt="Student marketplace Logo" class="logo-img">
+          <div>
+            <div class="brand-name">Student Marketplace</div>
+            <div class="brand-tagline">Buy • Sell • Rent • Thrive</div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a href="https://conductorhimselfwhipped.com/spymr251ew?key=ce76edf7e5c6e4907177e712dc143365" target="_blank" class="btn btn-secondary" title="Support us with a click">
+            <i class="fas fa-heart"></i> Support
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="quick-access">
+    <div class="container">
+      <div class="quick-access-links">
+        <a href="text.html" class="quick-link">
+          <i class="fas fa-book"></i> Textbooks
+        </a>
+        <a href="https://info.dtech24.co.za" target="_blank" class="quick-link">
+          <i class="fas fa-question-circle"></i> Ask a Question
+        </a>
+        <a href="in.html" class="quick-link">
+          <i class="fas fa-tag"></i> Sell/Rent Items
+        </a>
+        <a href="buy.html" class="quick-link">
+          <i class="fas fa-shopping-cart"></i> Buy Items
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero">
+    <div class="container">
+      <h1 class="hero-title">Your Marketplace for Everything</h1>
+      <p class="hero-subtitle">Discover amazing deals on second-hand items, rent what you need, or make money by listing your own items. Student Marketplace  makes trading simple and secure.</p>
+    </div>
+  </section>
+
+  <section class="services">
+    <div class="container">
+      <h2 class="section-title">Our Services</h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="card-header">
+            <i class="fas fa-tags"></i>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Sell or Rent Out</h3>
+            <p class="card-text">List your items for sale or rent to our community of buyers. Earn money from things you no longer need.</p>
+            <a href="in.html" class="btn btn-primary">Start Listing</a>
+          </div>
+        </div>
+        
+        <div class="service-card">
+          <div class="card-header">
+            <i class="fas fa-shopping-basket"></i>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Buy Second-Hand</h3>
+            <p class="card-text">Find quality pre-owned items at great prices. Save money while being eco-friendly.</p>
+            <a href="buy.html" class="btn btn-primary">Browse Items</a>
+          </div>
+        </div>
+        
+        <div class="service-card">
+          <div class="card-header">
+            <i class="fas fa-hand-holding-usd"></i>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Rent Items</h3>
+            <p class="card-text">Need something temporarily? Rent from others in the community instead of buying new.</p>
+            <a href="sel.html" class="btn btn-primary">Browse Rentals</a>
+          </div>
+        </div>
+        
+        <div class="service-card">
+          <div class="card-header">
+            <i class="fas fa-concierge-bell"></i>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Premium Services</h3>
+            <p class="card-text">Explore our additional services designed to make your buying and selling experience seamless.</p>
+            <a href="sev.html" class="btn btn-primary">View Services</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <section class="contact-section">
+      <div class="contact-info">
+        <h3 class="contact-title">Need Help? Contact Us</h3>
+        <div class="contact-details">
+          <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <span>studentmarketplaceservices@gmail</span>
+          </div>
+          <div class="contact-item">
+            <i class="fab fa-whatsapp"></i>
+            <span>+27 67 001 5423</span>
+          </div>
+        </div>
+        <a href="https://info.dtech24.co.za" target="_blank" class="btn btn-outline">
+          <i class="fas fa-headset"></i> Live Support
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-about">
+          <div class="footer-logo">
+            <img src="logo.png" alt="DTech Logo" class="footer-logo-img">
+            <span class="footer-logo-text">Student Marketplace</span>
+          </div>
+          <p class="footer-about">Your trusted platform for buying, selling and renting items within your community. Quality service since 2025.</p>
+        </div>
+        
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="text.html">Textbooks</a></li>
+            <li><a href="buy.html">Browse Items</a></li>
+            <li><a href="sel.html">Rent Items</a></li>
+            <li><a href="sev.html">Our Services</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-links">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="terms.html">Terms & Conditions</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="about.html">About Us</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-links">
+          <h3>Connect</h3>
+          <ul>
+            <li><a href="mailto:dtech2services@gmail.com">Email Us</a></li>
+            <li><a href="https://wa.me/27694604570">WhatsApp</a></li>
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Twitter</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        &copy; 2025 Student Marketplace. All rights reserved. | Created by @mbasamakapela
+      </div>
+    </div>
+  </footer>
+
+  <script type='text/javascript' src='//conductorhimselfwhipped.com/61/51/71/61517150132ff41edb773555ec988118.js'></script>
+</body>
+</html>
