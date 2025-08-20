@@ -1,293 +1,1065 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- SEO & Metadata for Google (Preasx24) -->
-<title>Preasx24 | Founder of DTECH | South African Tech Entrepreneur</title>
-<meta name="description" content="Preasx24 is a South African tech entrepreneur and the founder of DTECH, a digital ecosystem empowering youth through education, innovation, and technology." />
-<meta name="keywords" content="Preasx24, DTECH, DTECH Services, South African entrepreneur, student tech founder, digital innovation, empowering youth, tech for students, DTECH Info, DTECH HQ, DTECH General" />
-<meta name="author" content="Preasx24" />
-<meta name="robots" content="index, follow" />
-<link rel="canonical" href="https://preasx24.co.za/" />
-
-<!-- Open Graph (for Facebook, LinkedIn, etc.) -->
-<meta property="og:title" content="Preasx24 | Founder of DTECH" />
-<meta property="og:description" content="Preasx24 is a South African tech founder empowering youth with the DTECH ecosystem: Services, Info, HQ, and more." />
-<meta property="og:image" content="https://preasx24.co.za/images/preasx24.jpg" />
-<meta property="og:url" content="https://preasx24.co.za" />
-<meta property="og:type" content="website" />
-
-<!-- Twitter Cards -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Who is Preasx24?" />
-<meta name="twitter:description" content="Discover how Preasx24 is empowering youth through the DTECH ecosystem, using technology, education, and digital solutions." />
-<meta name="twitter:image" content="https://preasx24.co.za/images/preasx24.jpg" />
-
-<!-- Structured Data (JSON-LD) to tell Google who you are) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "name": "Preasx24",
-  "alternateName": "Preasx24",
-  "description": "Preasx24 is a South African student tech entrepreneur and founder of DTECH, a multi-branch digital brand focused on youth empowerment, innovation, and education.",
-  "url": "https://preasx24.co.za",
-  "jobTitle": "Founder of DTECH",
-  "sameAs": [
-    "https://about.me/preasx24",
-    "https://www.instagram.com/preasx24",
-    "https://www.linkedin.com/in/d-tech-services-722b19363",
-    "https://facebook.com/D-techDestroyers-legion--100054886954297"
-  ],
-  "worksFor": {
-    "@type": "Organization",
-    "name": "DTECH",
-    "url": "https://www.dtech-services.co.za"
-  },
-  "nationality": {
-    "@type": "Country",
-    "name": "South Africa"
-  }
-}
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D-TECH Headquarters</title>
-
+    <title>AdPulse - Automate, Optimize, Earn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #0099ff;
+            --primary-dark: #0077cc;
+            --secondary: #00ccff;
+            --dark: #0a0a0a;
+            --darker: #050505;
+            --dark-light: #121212;
+            --gray: #888;
+            --light: #f8f8f8;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f9fa;
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            background-color: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 153, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 85% 30%, rgba(0, 204, 255, 0.05) 0%, transparent 20%);
         }
-
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header & Navigation */
         header {
-            text-align: center;
-            color: white;
-            padding: 50px 5%;
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            flex-shrink: 0;
+            background-color: rgba(5, 5, 5, 0.95);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0, 153, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
             position: relative;
-            background-size: cover;
-            background-position: center;
-            animation: fadeIn 2s ease-in-out;
         }
-
-        header img {
-            width: 150px;
-            height: auto;
-            filter: drop-shadow(0 0 10px #00d9ff);
+        
+        .nav-links a:hover {
+            color: var(--primary);
         }
-
-        header h1 {
-            margin: 20px 0;
-            font-size: 3em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            animation: slideIn 1s ease-out;
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s;
         }
-
-        header p {
-            font-size: 1.2em;
-            margin: 10px 0;
-            max-width: 80%;
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 150px 0 100px;
+            text-align: center;
+            background: linear-gradient(rgba(5, 5, 5, 0.9), rgba(5, 5, 5, 0.9)), 
+                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.03"><rect fill="%230099ff" x="0" y="0" width="100" height="100"/></svg>');
+            background-size: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 153, 255, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 153, 255, 0.3);
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            color: var(--gray);
+            max-width: 800px;
             margin-left: auto;
             margin-right: auto;
         }
-
-        footer {
-            text-align: center;
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px 5%;
-            margin-top: 20px;
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
         }
-
-        footer a {
-            color: #00d9ff;
+        
+        .btn {
+            padding: 15px 30px;
+            border-radius: 50px;
             text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
         }
-
-        footer a:hover {
-            color: #1affff;
-        }
-
-        footer .social-links a {
-            margin: 0 10px;
-            text-decoration: none;
-            color: #00d9ff;
-        }
-
-        footer .social-links a:hover {
-            color: #1affff;
-        }
-
-        /* Hamburger Menu */
-        .menu-icon {
+        
+        .btn::before {
+            content: '';
             position: absolute;
-            top: 20px;
-            left: 20px;
-            cursor: pointer;
-            z-index: 1001;
-        }
-
-        .menu-icon div {
-            width: 35px;
-            height: 5px;
-            margin: 6px 0;
-            background-color: white;
-            transition: 0.4s;
-        }
-
-        /* Side Menu */
-        .side-menu {
-            position: fixed;
             top: 0;
-            left: -250px;
-            width: 250px;
+            left: -100%;
+            width: 100%;
             height: 100%;
-            background-color: #111;
-            transition: 0.3s;
-            padding-top: 60px;
-            color: white;
-            z-index: 1000;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
         }
-
-        .side-menu a {
-            display: block;
-            padding: 15px;
-            text-decoration: none;
-            color: white;
-            font-size: 18px;
-            transition: 0.2s;
+        
+        .btn:hover::before {
+            left: 100%;
         }
-
-        .side-menu a:hover {
-            background-color: #575757;
-            transform: scale(1.05);
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            color: var(--light);
+            box-shadow: 0 5px 15px rgba(0, 153, 255, 0.4);
         }
-
-        .side-menu.open {
-            left: 0;
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 153, 255, 0.6);
         }
-
-        /* Overlay */
-        .menu-overlay {
-            position: fixed;
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--primary);
+            color: var(--dark);
+        }
+        
+        .trust-badge {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--gray);
+        }
+        
+        .badge i {
+            color: var(--primary);
+        }
+        
+        /* Sections */
+        section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 20px auto 0;
+        }
+        
+        /* About Section */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .feature-item i {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-top: 5px;
+        }
+        
+        .about-image {
+            position: relative;
+        }
+        
+        .about-image::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: 20px;
+            bottom: 20px;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            z-index: -1;
+            opacity: 0.5;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            background-color: var(--dark-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .how-it-works::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            display: none;
+            background: linear-gradient(45deg, rgba(0, 153, 255, 0.05) 0%, transparent 70%);
+            z-index: -1;
         }
-
-        .menu-overlay.active {
-            display: block;
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            counter-reset: step-counter;
         }
-
-        /* Mobile view adjustments */
-        @media screen and (max-width: 768px) {
-            header {
-                padding: 40px 5%;
+        
+        .step {
+            background: linear-gradient(145deg, rgba(0, 153, 255, 0.1), rgba(0, 153, 255, 0.05));
+            padding: 30px;
+            border-radius: 10px;
+            position: relative;
+            border-left: 3px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+        
+        .step:hover {
+            transform: translateY(-5px);
+        }
+        
+        .step::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--light);
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0, 153, 255, 0.3);
+        }
+        
+        .step h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        /* Features Section */
+        .features-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(145deg, var(--dark-light), var(--darker));
+            padding: 30px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 153, 255, 0.1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 153, 255, 0.2);
+            border-color: rgba(0, 153, 255, 0.3);
+        }
+        
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        /* Security Section */
+        .security {
+            background-color: var(--dark-light);
+            position: relative;
+        }
+        
+        .security::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 70% 30%, rgba(0, 153, 255, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .security-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .warning {
+            background: linear-gradient(145deg, rgba(255, 100, 100, 0.1), rgba(255, 100, 100, 0.05));
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 3px solid #ff6464;
+        }
+        
+        /* Backstory */
+        .backstory-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .creators {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .creator {
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .creator:hover {
+            transform: translateY(-5px);
+        }
+        
+        .creator img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 153, 255, 0.3);
+        }
+        
+        .creator-link {
+            color: var(--secondary);
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        
+        .creator-link:hover {
+            color: var(--primary);
+        }
+        
+        /* Tutorials */
+        .tutorials-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .tutorial-card {
+            background: linear-gradient(145deg, var(--dark-light), var(--darker));
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 153, 255, 0.1);
+        }
+        
+        .tutorial-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 153, 255, 0.2);
+            border-color: rgba(0, 153, 255, 0.3);
+        }
+        
+        .tutorial-card i {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* Use Cases */
+        .use-cases {
+            background-color: var(--dark-light);
+            position: relative;
+        }
+        
+        .use-cases::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 70%, rgba(0, 153, 255, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .cases-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .case-card {
+            background: linear-gradient(145deg, rgba(0, 153, 255, 0.1), rgba(0, 153, 255, 0.05));
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 3px solid var(--secondary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+        
+        .case-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .case-card h3 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        /* Disclaimer */
+        .disclaimer {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background: linear-gradient(145deg, var(--dark-light), var(--darker));
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 153, 255, 0.1);
+        }
+        
+        /* Footer */
+        footer {
+            background: linear-gradient(to bottom, var(--dark-light), var(--darker));
+            padding: 60px 0 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 100%, rgba(0, 153, 255, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, var(--dark-light), var(--darker));
+            color: var(--light);
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .social-links a:hover {
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            color: var(--light);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .about-content, .backstory-content {
+                grid-template-columns: 1fr;
             }
-
-            header h1 {
-                font-size: 2em;
+            
+            .hero h1 {
+                font-size: 2.8rem;
             }
-
-            header p {
-                font-size: 1em;
+            
+            .hero p {
+                font-size: 1.2rem;
             }
-
-            footer {
-                padding: 20px 5%;
+            
+            .creators {
+                justify-content: center;
             }
         }
-
-        /* Animations */
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--darker);
+                flex-direction: column;
+                padding: 20px;
+                text-align: center;
+                border-top: 1px solid var(--primary);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .hero {
+                padding: 120px 0 80px;
+            }
+            
+            .creators {
+                flex-direction: column;
+                align-items: center;
+            }
         }
-
-        @keyframes slideIn {
-            0% { transform: translateY(-50px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
     </style>
 </head>
 <body>
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-bolt"></i>
+                    <span class="logo-text">AdPulse</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#about">About</a>
+                    <a href="#features">Features</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#tutorials">Tutorials</a>
+                    <a href="#download">Download</a>
+                </div>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
 
-<header>
-    <div class="menu-icon" onclick="toggleMenu()">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <img src="dtech-logo.png" alt="D-TECH Logo">
-    <h1>Welcome to D-TECH Headquarters</h1>
-    <p>Explore our tools, projects, and cutting-edge resources. Whether you're looking to test your skills or explore new digital frontiers, D-TECH provides the resources and community for your growth.</p>
-</header>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>AdPulse</h1>
+            <p>Effortless click automation for your websites, designed for maximum ad revenue.</p>
+            <div class="cta-buttons">
+                <a href="#download" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Download Official Version
+                </a>
+                <a href="https://t.me/DTECHX24" target="_blank" class="btn btn-secondary">
+                    <i class="fab fa-telegram"></i> Join Official Telegram
+                </a>
+            </div>
+            <div class="trust-badge">
+                <div class="badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Trusted by creators</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-desktop"></i>
+                    <span>Optimized for all PCs</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Updated monthly</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Official tutorials</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<!-- Overlay -->
-<div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-title">
+                <h2>About AdPulse</h2>
+                <p>State-of-the-art click automation tool developed by WhiteRoseSA & DTech</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Maximize ad revenue safely and efficiently</h3>
+                    <p>AdPulse is designed to help website owners maximize ad revenue through precision automation of clicks, scrolls, and link interactions.</p>
+                    <p>With support for multiple browser sessions and intelligent scaling to your PC's specifications, AdPulse ensures optimal performance regardless of your system's capabilities.</p>
+                    
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Automates clicks, scrolls, and interactions</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Supports multiple browser sessions</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Intelligent PC specification scaling</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Optional proxy support</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='500' height='300' viewBox='0 0 500 300'><rect fill='%23121212' width='500' height='300'/><rect fill='%230099ff' x='100' y='50' width='300' height='200' rx='10'/><circle fill='%2300ccff' cx='250' cy='150' r='40'/></svg>" alt="AdPulse Interface" width="100%">
+                </div>
+            </div>
+        </div>
+    </section>
 
-<!-- Sliding Side Menu -->
-<div class="side-menu" id="sideMenu">
-    <a href="about.html">ABOUT US</a>
-    <a href="bot-updates.html">BOTS</a>
-    <a href="files.html">FILES</a>
-    <a href="youtube.html">YOUTUBE</a>
-    <a href="telegram.html">TELEGRAM</a>
-    <a href="faqs.html">FAQs</a>
-    <a href="giveaway.html">GIVEAWAYS</a>
-    <a href="host-finder.html">HOST FINDER</a>
-    <a href="etc.html">TOOLS & SERVICES</a>
-    <a href="tutorials.html">TUTORIALS</a>
-</div>
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-title">
+                <h2>How AdPulse Works</h2>
+                <p>Simple, transparent automation cycle for maximum results</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <h3>Launch Browser Sessions</h3>
+                    <p>Automatically opens the required number of browsers based on your PC's capabilities.</p>
+                </div>
+                <div class="step">
+                    <h3>Automated Clicks</h3>
+                    <p>Completes configured clicks per cycle (default: 15) with precision timing.</p>
+                </div>
+                <div class="step">
+                    <h3>Interval Pause</h3>
+                    <p>Waits for a configurable pause (default: 2 minutes) to mimic natural user behavior.</p>
+                </div>
+                <div class="step">
+                    <h3>Cycle Repetition</h3>
+                    <p>Repeats the cycle continuously to maximize long-term results and revenue.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<script async="async" data-cfasync="false" src="//conductorhimselfwhipped.com/17bdc3ff4d9e3bbe0f49799dd182c4c1/invoke.js"></script>
-<div id="container-17bdc3ff4d9e3bbe0f49799dd182c4c1"></div>
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Features & Benefits</h2>
+                <p>Everything you need to optimize your ad revenue</p>
+            </div>
+            <div class="features-container">
+                <div class="feature-card">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h3>Adaptive Performance</h3>
+                    <p>Automatically adjusts browser sessions for low, medium, and high-spec PCs.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Real-Time Monitoring</h3>
+                    <p>In-tool dashboards show total clicks, active cycles, and performance metrics.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h3>Tutorials Everywhere</h3>
+                    <p>Step-by-step tutorials included in the tool, on YouTube, and via Telegram.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Safety & Trust</h3>
+                    <p>Only download from the official website or verified Telegram channels.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-window-restore"></i>
+                    <h3>Multi-Browser Support</h3>
+                    <p>Run several browser instances simultaneously to maximize click generation.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-sliders-h"></i>
+                    <h3>Customizable Settings</h3>
+                    <p>Adjust click intervals, cycles, and optional proxy usage to suit your strategy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<script>
-    function toggleMenu() {
-        var menu = document.getElementById("sideMenu");
-        var overlay = document.getElementById("menuOverlay");
+    <!-- Security Section -->
+    <section class="security">
+        <div class="container">
+            <div class="section-title">
+                <h2>Authenticity & Security</h2>
+                <p>Your safety is our priority</p>
+            </div>
+            <div class="security-content">
+                <p>AdPulse is the only official version developed by WhiteRoseSA & DTech. Any other copies online are unauthorized and may be unsafe.</p>
+                
+                <div class="warning">
+                    <p><i class="fas fa-exclamation-triangle"></i> There is no Pro/Premium version of AdPulse. Claims of premium features elsewhere are false.</p>
+                </div>
+                
+                <p>AdPulse is intended for ethical use on websites you own or manage. Unauthorized use may violate laws or ad network policies.</p>
+            </div>
+        </div>
+    </section>
 
-        if (menu.classList.contains("open")) {
-            menu.classList.remove("open");
-            overlay.classList.remove("active");
-        } else {
-            menu.classList.add("open");
-            overlay.classList.add("active");
-        }
-    }
-</script>
+    <!-- Backstory -->
+    <section class="backstory">
+        <div class="container">
+            <div class="section-title">
+                <h2>Backstory & Philosophy</h2>
+                <p>Created with transparency and reliability in mind</p>
+            </div>
+            <div class="backstory-content">
+                <div class="backstory-text">
+                    <p>AdPulse was created to provide transparent, reliable, and scalable click automation for website owners and testers.</p>
+                    <p>DTech created the original method, while WhiteRoseSA refined usability, added tutorials, optimized performance for all PC types, and improved the user experience.</p>
+                    <p>The creators prioritized safety, adaptability, and ease-of-use over shortcuts, ensuring a tool that empowers users without risking security or system stability.</p>
+                </div>
+                <div class="creators">
+                    <div class="creator">
+                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='100' height='100'><rect width='100' height='100' fill='%230099ff'/><circle cx='50' cy='40' r='20' fill='%230a0a0a'/><rect x='30' y='70' width='40' height='20' fill='%230a0a0a'/></svg>" alt="WhiteRoseSA">
+                        <h4>WhiteRoseSA</h4>
+                        <p>Usability & Optimization</p>
+                        <a href="https://t.me/Whiterosesa" target="_blank" class="creator-link">
+                            <i class="fab fa-telegram"></i> @Whiterosesa
+                        </a>
+                    </div>
+                    <div class="creator">
+                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='100' height='100'><rect width='100' height='100' fill='%2300ccff'/><circle cx='50' cy='40' r='20' fill='%230a0a0a'/><rect x='30' y='70' width='40' height='20' fill='%230a0a0a'/></svg>" alt="DTech">
+                        <h4>PREASX24 (D-Tech)</h4>
+                        <p>Original Method Creator</p>
+                        <a href="https://t.me/PREASX24" target="_blank" class="creator-link">
+                            <i class="fab fa-telegram"></i> @PREASX24
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<footer>
-    <p>&copy; 2025 D-TECH Headquarters. All rights reserved.</p>
-    <div class="social-links">
-        <a href="https://telegram.com" target="_blank">Telegram</a>
-        <a href="https://youtube.com" target="_blank">YouTube</a>
-    </div>
-    <p><a href="terms.html">Terms and Conditions</a></p>
-</footer>
+    <!-- Tutorials -->
+    <section id="tutorials" class="tutorials">
+        <div class="container">
+            <div class="section-title">
+                <h2>Tutorials & Support</h2>
+                <p>Comprehensive learning resources for all users</p>
+            </div>
+            <div class="tutorials-container">
+                <div class="tutorial-card">
+                    <i class="fas fa-book"></i>
+                    <h3>In-App Tutorials</h3>
+                    <p>Step-by-step guidance on setup, configuration, and optimization directly within the tool.</p>
+                </div>
+                <div class="tutorial-card">
+                    <a href="https://youtu.be/0tYnJBxO-Js?si=lG99vOdfoY56BFVR" target="_blank" style="color: inherit; text-decoration: none;">
+                        <i class="fab fa-youtube"></i>
+                        <h3>YouTube Guides</h3>
+                        <p>Visual tutorials covering beginner to advanced strategies for maximizing AdPulse.</p>
+                    </a>
+                </div>
+                <div class="tutorial-card">
+                    <a href="https://t.me/DTECHX24" target="_blank" style="color: inherit; text-decoration: none;">
+                        <i class="fab fa-telegram"></i>
+                        <h3>Telegram Channel</h3>
+                        <p>Direct support from creators, updates, announcements, and community engagement.</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<script type='text/javascript' src='//conductorhimselfwhipped.com/61/51/71/61517150132ff41edb773555ec988118.js'></script>
+    <!-- Use Cases -->
+    <section class="use-cases">
+        <div class="container">
+            <div class="section-title">
+                <h2>Use Cases</h2>
+                <p>Who can benefit from AdPulse</p>
+            </div>
+            <div class="cases-container">
+                <div class="case-card">
+                    <h3>Website Owners</h3>
+                    <p>Automate click generation for testing ad revenue potential on your own websites.</p>
+                </div>
+                <div class="case-card">
+                    <h3>Digital Marketers</h3>
+                    <p>Monitor campaign effectiveness with controlled, repeatable clicks and interactions.</p>
+                </div>
+                <div class="case-card">
+                    <h3>PC Enthusiasts</h3>
+                    <p>Test system capabilities with multi-browser automation setups and performance scaling.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <section class="disclaimer-section">
+        <div class="container">
+            <div class="disclaimer">
+                <h3>Professional Disclaimer</h3>
+                <p>AdPulse is intended for educational and testing purposes only. Unauthorized use on third-party websites is strictly prohibited and may be illegal. Users are responsible for compliance with all local laws and ad network policies. Always use AdPulse ethically and safely on websites you own or have permission to manage.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download CTA -->
+    <section id="download" class="cta-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Get Started with AdPulse</h2>
+                <p>Download the official version today</p>
+            </div>
+            <div class="cta-buttons" style="margin-top: 30px;">
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Download AdPulse Now
+                </a>
+                <a href="https://t.me/DTECHX24" target="_blank" class="btn btn-secondary">
+                    <i class="fab fa-telegram"></i> Join Our Telegram Channel
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="logo" style="justify-content: center; margin-bottom: 20px;">
+                <i class="fas fa-bolt"></i>
+                <span class="logo-text">AdPulse</span>
+            </div>
+            <div class="footer-links">
+                <a href="#about">About</a>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#tutorials">Tutorials</a>
+                <a href="#download">Download</a>
+            </div>
+            <div class="social-links">
+                <a href="https://t.me/DTECHX24" target="_blank"><i class="fab fa-telegram"></i></a>
+                <a href="https://youtu.be/0tYnJBxO-Js?si=lG99vOdfoY56BFVR" target="_blank"><i class="fab fa-youtube"></i></a>
+                <a href="https://t.me/Whiterosesa" target="_blank"><i class="fas fa-user"></i></a>
+                <a href="https://t.me/PREASX24" target="_blank"><i class="fas fa-user"></i></a>
+            </div>
+            <p class="copyright">© 2025 AdPulse. Developed by WhiteRoseSA & DTech. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
 </body>
 </html>
