@@ -15,7 +15,7 @@
     --background:#f9f5f1;
     --card-bg:#ffffff;
     --book-font: "Georgia","Times New Roman", serif;
-    --reader-font-size: 14px;
+    --reader-font-size: 11px; /* Reduced from 14px */
     --page-words: 500;
   }
 
@@ -174,7 +174,6 @@
     text-align:center;
     font-weight:700;
     color:#333;
-    font-size:14px;
   }
 
   .book-title{
@@ -256,14 +255,9 @@
   }
 
   .reader-header{
-    height:60px;
-    padding:0 20px;
-    border-bottom:1px solid #e6dfd5;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    background:rgba(255,255,255,0.9);
-    backdrop-filter:blur(5px);
+    height:0;
+    padding:0;
+    overflow:hidden;
   }
 
   .reader-title{
@@ -277,27 +271,8 @@
     color:var(--accent-dark);
   }
 
-  .reader-controls{
-    display:flex;
-    gap:8px;
-    align-items:center;
-  }
-
-  .reader-controls button{
-    padding:8px 12px;
-    border-radius:8px;
-    border:none;
-    background:#f3f3f3;
-    cursor:pointer;
-    transition:all 0.2s ease;
-  }
-
-  .reader-controls button:hover{
-    background:#e6e6e6;
-  }
-
   .reader-body{
-    height:calc(100% - 60px);
+    height:100%;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -312,8 +287,8 @@
     align-items:center;
     justify-content:center;
     box-sizing:border-box;
-    padding:40px;
-    max-width:900px;
+    padding:20px;
+    max-width:1000px;
     margin:0 auto;
   }
 
@@ -344,21 +319,21 @@
   }
 
   .page-content h1{
-    font-size:24px;
+    font-size:20px;
     text-align:center;
-    margin:20px 0;
+    margin:10px 0;
     color:var(--accent-dark);
   }
 
   .page-content h2.chapter{
-    font-size:18px;
+    font-size:16px;
     text-align:center;
-    margin:30px 0;
+    margin:20px 0;
     color:var(--accent);
   }
 
   .page-content p{
-    margin:0 0 16px;
+    margin:0 0 12px;
     text-indent:1.5em;
   }
 
@@ -369,37 +344,37 @@
   .reader-footer{
     position:absolute;
     bottom:20px;
-    left:20px;
-    right:20px;
+    left:50%;
+    transform:translateX(-50%);
     display:flex;
-    justify-content:space-between;
+    justify-content:center;
     align-items:center;
     pointer-events:none;
+    opacity:1;
+    transition:opacity 0.5s ease;
   }
 
-  .footer-controls{
-    pointer-events:auto;
-    display:flex;
-    gap:10px;
-    align-items:center;
+  .reader-footer.hidden{
+    opacity:0;
   }
 
   .page-indicator{
-    background:rgba(255,255,255,0.9);
+    background:rgba(0,0,0,0.7);
     padding:8px 16px;
     border-radius:20px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.1);
     font-size:14px;
-    color:var(--text-light);
+    color:#fff;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
   }
 
   .nav-hit-left,.nav-hit-right{
     position:absolute;
     top:0;
     bottom:0;
-    width:30%;
+    width:40%;
     pointer-events:auto;
     z-index:10;
+    cursor:pointer;
   }
 
   .nav-hit-left{
@@ -444,7 +419,7 @@
   /* small screens */
   @media (max-width:768px){
     .page-container{
-      padding:20px;
+      padding:10px;
     }
     
     .page-content{
@@ -473,6 +448,10 @@
     
     .books-grid{
       grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+    }
+    
+    .nav-hit-left, .nav-hit-right{
+      width:30%;
     }
   }
 
@@ -562,9 +541,6 @@
 <div class="reader-fullscreen" id="reader">
   <div class="reader-header">
     <div class="reader-title" id="readerTitle">Loading...</div>
-    <div class="reader-controls">
-      <button id="closeReader" class="primary" style="background:var(--accent);color:#fff">Close</button>
-    </div>
   </div>
 
   <div class="reader-body">
@@ -581,10 +557,7 @@
       <div class="nav-arrow nav-arrow-right">▶</div>
     </div>
 
-    <div class="reader-footer">
-      <div class="footer-controls">
-        <button id="openOriginal" class="small-btn">Open Original</button>
-      </div>
+    <div class="reader-footer" id="readerFooter">
       <div class="page-indicator" id="pageIndicator">Page 1 / 1</div>
     </div>
   </div>
@@ -603,7 +576,8 @@ let pages = [];            // current pages (HTML strings)
 let currentPage = 0;
 let currentBook = null;    // {title, textUrl, cover, author}
 let wordsPerPage = WORDS_PER_PAGE_DEFAULT;
-let fontSize = 14; // Increased from 12px to 14px as requested
+let fontSize = 11; // Reduced font size as requested
+let pageIndicatorTimeout;
 
 /* UI refs */
 const booksGrid = document.getElementById('booksGrid');
@@ -612,6 +586,7 @@ const pageContent = document.getElementById('pageContent');
 const pageIndicator = document.getElementById('pageIndicator');
 const readerEl = document.getElementById('reader');
 const readerTitle = document.getElementById('readerTitle');
+const readerFooter = document.getElementById('readerFooter');
 
 /* Tabs */
 const tabHome = document.getElementById('tab-home');
@@ -852,8 +827,13 @@ async function openBook(book){
 
 function showReader(){ 
   readerEl.style.display='block'; 
-  readerEl.focus(); 
   document.body.style.overflow='hidden'; 
+  // Reset page indicator visibility
+  clearTimeout(pageIndicatorTimeout);
+  readerFooter.classList.remove('hidden');
+  pageIndicatorTimeout = setTimeout(() => {
+    readerFooter.classList.add('hidden');
+  }, 3000);
 }
 
 function hideReader(){ 
@@ -984,28 +964,84 @@ function renderPage(idx){
   try { localStorage.setItem('gutenberg:lastpage:' + currentBook.textUrl, String(currentPage)); } catch(e){}
   // ensure continue list refresh
   renderContinueList();
+  
+  // Show page indicator and set timeout to fade it
+  clearTimeout(pageIndicatorTimeout);
+  readerFooter.classList.remove('hidden');
+  pageIndicatorTimeout = setTimeout(() => {
+    readerFooter.classList.add('hidden');
+  }, 3000);
 }
 
 /* navigation handlers */
-document.getElementById('closeReader').addEventListener('click', ()=> hideReader());
-document.getElementById('openOriginal').addEventListener('click', ()=> { if(currentBook && currentBook.textUrl) window.open(currentBook.textUrl,'_blank'); });
+function navigatePage(direction) {
+  if (direction === 'next') {
+    renderPage(currentPage + 1);
+  } else if (direction === 'prev') {
+    renderPage(currentPage - 1);
+  }
+}
 
 /* keyboard navigation */
 window.addEventListener('keydown', (e)=>{
   if (readerEl.style.display === 'block'){
-    if (e.key === 'ArrowRight' || e.key === 'PageDown') { renderPage(currentPage + 1); e.preventDefault(); }
-    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { renderPage(currentPage - 1); e.preventDefault(); }
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { 
+      navigatePage('next'); 
+      e.preventDefault(); 
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { 
+      navigatePage('prev'); 
+      e.preventDefault(); 
+    }
     if (e.key === 'Escape') hideReader();
   }
 });
 
 /* swipe/tap navigation areas */
 let tx=0, ty=0;
-function touchStart(e){ const t = e.touches ? e.touches[0] : e; tx = t.clientX; ty = t.clientY; }
-function touchEnd(e){ const t = e.changedTouches ? e.changedTouches[0] : e; const dx = t.clientX - tx; const dy = t.clientY - ty; if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30){ if (dx < 0) renderPage(currentPage+1); else renderPage(currentPage-1); } }
-document.getElementById('navLeft').addEventListener('touchstart', touchStart); document.getElementById('navRight').addEventListener('touchstart', touchStart);
-document.getElementById('navLeft').addEventListener('touchend', touchEnd); document.getElementById('navRight').addEventListener('touchend', touchEnd);
-document.getElementById('navLeft').addEventListener('click', ()=> renderPage(currentPage-1)); document.getElementById('navRight').addEventListener('click', ()=> renderPage(currentPage+1));
+function touchStart(e){ 
+  const t = e.touches ? e.touches[0] : e; 
+  tx = t.clientX; 
+  ty = t.clientY; 
+  
+  // Show page indicator on touch
+  clearTimeout(pageIndicatorTimeout);
+  readerFooter.classList.remove('hidden');
+}
+function touchEnd(e){ 
+  const t = e.changedTouches ? e.changedTouches[0] : e; 
+  const dx = t.clientX - tx; 
+  const dy = t.clientY - ty; 
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30){ 
+    if (dx < 0) navigatePage('next'); 
+    else navigatePage('prev'); 
+  }
+  
+  // Set timeout to hide page indicator after touch
+  pageIndicatorTimeout = setTimeout(() => {
+    readerFooter.classList.add('hidden');
+  }, 3000);
+}
+
+document.getElementById('navLeft').addEventListener('touchstart', touchStart); 
+document.getElementById('navRight').addEventListener('touchstart', touchStart);
+document.getElementById('navLeft').addEventListener('touchend', touchEnd); 
+document.getElementById('navRight').addEventListener('touchend', touchEnd);
+document.getElementById('navLeft').addEventListener('click', ()=> navigatePage('prev')); 
+document.getElementById('navRight').addEventListener('click', ()=> navigatePage('next'));
+
+// Click anywhere on reader to show page indicator temporarily
+readerEl.addEventListener('click', (e) => {
+  // Don't trigger if clicking on navigation areas
+  if (e.target.id !== 'navLeft' && e.target.id !== 'navRight' && 
+      !e.target.closest('#navLeft') && !e.target.closest('#navRight')) {
+    clearTimeout(pageIndicatorTimeout);
+    readerFooter.classList.remove('hidden');
+    pageIndicatorTimeout = setTimeout(() => {
+      readerFooter.classList.add('hidden');
+    }, 3000);
+  }
+});
 
 /* CONTINUE & READ LATER helpers - after page change, these lists update */
 function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -1015,9 +1051,6 @@ function showToast(text){
   const t = document.createElement('div'); t.textContent = text; t.className = 'toast';
   document.body.appendChild(t); setTimeout(()=>t.remove(), 2000);
 }
-
-/* utility for opening encoded urls safely */
-function escapeForWindow(u){ return u?u.replace(/'/g,"\\'") : ''; }
 
 /* render both lists initially */
 renderContinueList();
