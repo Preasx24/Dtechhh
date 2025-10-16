@@ -15,7 +15,7 @@
     --background:#f9f5f1;
     --card-bg:#ffffff;
     --book-font: "Georgia","Times New Roman", serif;
-    --reader-font-size: 9px; /* Reduced font size */
+    --reader-font-size: 9px;
     --page-words: 500;
   }
 
@@ -113,7 +113,7 @@
   }
 
   .layout{
-    max-width:1200px;
+    max-width:1400px;
     margin:24px auto;
     padding:0 20px;
   }
@@ -124,10 +124,69 @@
     font-size:15px;
   }
 
+  /* Home Page Design - Classic Library */
+  #homeSection {
+    background: linear-gradient(135deg, #f9f5f1 0%, #e8dfd3 100%);
+    padding: 30px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border: 1px solid #e0d5c5;
+  }
+
+  #homeSection .section-title {
+    color: #8b6b4c;
+    border-bottom: 2px solid #d4c4b5;
+    padding-bottom: 12px;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+  }
+
+  #homeSection .section-title:before {
+    content: "📚";
+    font-size: 32px;
+  }
+
+  .genre-section {
+    margin-bottom: 40px;
+    background: rgba(255,255,255,0.7);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+
+  .genre-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0d5c5;
+  }
+
+  .genre-title {
+    font-size: 22px;
+    color: #6d533c;
+    font-weight: 700;
+  }
+
+  .genre-count {
+    background: #8b6b4c;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
   .books-grid{
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
     gap:20px;
+    margin-bottom: 20px;
   }
 
   .book-card{
@@ -142,12 +201,24 @@
     transition:all 0.3s ease;
     border:1px solid transparent;
     cursor:pointer;
+    position: relative;
+    overflow: hidden;
   }
 
   .book-card:hover{
     transform:translateY(-5px);
     box-shadow:0 8px 20px rgba(0,0,0,0.1);
     border-color:var(--accent-light);
+  }
+
+  .book-card:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #8b6b4c, #d4c4b5);
   }
 
   .cover-wrap{
@@ -240,6 +311,306 @@
 
   .small-btn:hover{
     background:var(--accent-light);
+  }
+
+  .load-more-btn {
+    background: #8b6b4c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    display: block;
+    margin: 0 auto;
+    transition: all 0.2s ease;
+  }
+
+  .load-more-btn:hover {
+    background: #6d533c;
+    transform: translateY(-2px);
+  }
+
+  /* Continue Reading Section - Modern Progress Design */
+  #continueSection {
+    background: linear-gradient(135deg, #f0f7f0 0%, #d9ead9 100%);
+    padding: 30px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border: 1px solid #c8d9c8;
+  }
+
+  #continueSection .section-title {
+    color: #2d5a2d;
+    border-bottom: 2px solid #a8c8a8;
+    padding-bottom: 12px;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+  }
+
+  #continueSection .section-title:before {
+    content: "⏱️";
+    font-size: 32px;
+  }
+
+  .continue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+  }
+
+  .continue-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #4a8c4a;
+    position: relative;
+  }
+
+  .continue-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+
+  .continue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .continue-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d5a2d;
+    margin: 0;
+    flex: 1;
+  }
+
+  .continue-date {
+    font-size: 12px;
+    color: #7a9c7a;
+    background: #e8f3e8;
+    padding: 4px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+
+  .continue-author {
+    color: #7a9c7a;
+    font-size: 14px;
+    margin-top: -10px;
+  }
+
+  .progress-container {
+    margin: 10px 0;
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #7a9c7a;
+    margin-bottom: 5px;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4a8c4a, #6bb46b);
+    border-radius: 3px;
+  }
+
+  .continue-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .continue-btn {
+    flex: 1;
+    background: #4a8c4a;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .continue-btn:hover {
+    background: #3a7a3a;
+  }
+
+  .remove-btn {
+    background: #f5f5f5;
+    color: #7a7a7a;
+    border: 1px solid #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .remove-btn:hover {
+    background: #e8e8e8;
+  }
+
+  /* Read Later Section - Collection Design */
+  #readLaterSection {
+    background: linear-gradient(135deg, #f9f1f1 0%, #f0e0e0 100%);
+    padding: 30px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border: 1px solid #e8d5d5;
+  }
+
+  #readLaterSection .section-title {
+    color: #8c4a4a;
+    border-bottom: 2px solid #d4b8b8;
+    padding-bottom: 12px;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+  }
+
+  #readLaterSection .section-title:before {
+    content: "📌";
+    font-size: 32px;
+  }
+
+  .readlater-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+  }
+
+  .readlater-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.3s ease;
+    border-top: 4px solid #d4b8b8;
+    position: relative;
+  }
+
+  .readlater-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+
+  .readlater-card:before {
+    content: "★";
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    background: #8c4a4a;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .readlater-cover {
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f3f3f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .readlater-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .readlater-info {
+    flex: 1;
+  }
+
+  .readlater-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #8c4a4a;
+    margin: 0 0 5px 0;
+  }
+
+  .readlater-author {
+    color: #9e7e7e;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .readlater-date {
+    font-size: 12px;
+    color: #b8a0a0;
+    margin-top: 8px;
+  }
+
+  .readlater-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .readlater-open {
+    flex: 1;
+    background: #8c4a4a;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .readlater-open:hover {
+    background: #7a3a3a;
+  }
+
+  .readlater-remove {
+    background: #f5f5f5;
+    color: #7a7a7a;
+    border: 1px solid #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .readlater-remove:hover {
+    background: #e8e8e8;
   }
 
   /* Page reader - FULLSCREEN */
@@ -416,46 +787,6 @@
     right:20px;
   }
 
-  /* Section-specific styling */
-  #homeSection {
-    background: linear-gradient(to bottom, #f9f5f1 0%, #f0e6d8 100%);
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-  }
-
-  #homeSection .section-title {
-    color: #8b6b4c;
-    border-bottom: 2px solid #d4c4b5;
-    padding-bottom: 10px;
-  }
-
-  #continueSection {
-    background: linear-gradient(to bottom, #f1f9f1 0%, #e0f0e0 100%);
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-  }
-
-  #continueSection .section-title {
-    color: #5a7d5a;
-    border-bottom: 2px solid #b8d4b8;
-    padding-bottom: 10px;
-  }
-
-  #readLaterSection {
-    background: linear-gradient(to bottom, #f9f1f1 0%, #f0e0e0 100%);
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-  }
-
-  #readLaterSection .section-title {
-    color: #7d5a5a;
-    border-bottom: 2px solid #d4b8b8;
-    padding-bottom: 10px;
-  }
-
   /* small screens */
   @media (max-width:768px){
     .page-container{
@@ -558,18 +889,18 @@
   <div id="homeSection">
     <h2 class="section-title">Browse Collection</h2>
     <div class="stats" id="stats">Loading books...</div>
-    <div class="books-grid" id="booksGrid"><div class="loading">Loading data.txt...</div></div>
+    <div id="homeContent"></div>
   </div>
 
   <div id="continueSection" style="display:none">
     <h2 class="section-title">Continue Reading</h2>
-    <div id="continueList" class="list-grid"></div>
+    <div id="continueList" class="continue-grid"></div>
     <div id="continueEmpty" class="empty-note" style="display:none">Nothing to continue — open a book and it will appear here.</div>
   </div>
 
   <div id="readLaterSection" style="display:none">
     <h2 class="section-title">Read Later</h2>
-    <div id="readLaterList" class="list-grid"></div>
+    <div id="readLaterList" class="readlater-grid"></div>
     <div id="readLaterEmpty" class="empty-note" style="display:none">No saved books — add some using the "Read Later" button on a book card.</div>
   </div>
 </div>
@@ -607,6 +938,7 @@ const PROXY_KEY = "dtech_secret";
 const WORDS_PER_PAGE_DEFAULT = 500;         // Change this value to adjust words per page
 const MIN_BALANCE_RATIO = 0.40;             // minimum fraction for last page before rebalancing
 const FONT_SIZE_DEFAULT = 9;                // Change this value to adjust font size
+const BOOKS_PER_GENRE = 10;                 // Number of books to show per genre initially
 
 /* STATE */
 let books = [];
@@ -616,9 +948,11 @@ let currentBook = null;    // {title, textUrl, cover, author}
 let wordsPerPage = WORDS_PER_PAGE_DEFAULT;
 let fontSize = FONT_SIZE_DEFAULT;
 let pageIndicatorTimeout;
+let genreDisplayCounts = {}; // Track how many books are shown per genre
 
 /* UI refs */
 const booksGrid = document.getElementById('booksGrid');
+const homeContent = document.getElementById('homeContent');
 const statsEl = document.getElementById('stats');
 const pageContent = document.getElementById('pageContent');
 const pageIndicator = document.getElementById('pageIndicator');
@@ -657,7 +991,7 @@ async function loadBooks(){
     parseDataTxt(txt);
   } catch(err){
     console.error('loadBooks', err);
-    booksGrid.innerHTML = '<div class="empty-note">Error loading data.txt — open console.</div>';
+    homeContent.innerHTML = '<div class="empty-note">Error loading data.txt — open console.</div>';
     statsEl.textContent = '📚 0 books loaded';
   }
 }
@@ -702,46 +1036,142 @@ function parseDataTxt(text){
     cover: b.cover || ''
   }));
 
-  renderBookGrid();
+  renderHomePage();
   statsEl.textContent = `📚 ${books.length} books loaded • Use search/genre`;
   populateGenreFilter();
   renderContinueList();
 }
 
-/* render book grid */
-function renderBookGrid(list=books){
-  booksGrid.innerHTML = '';
-  if (!list.length) { booksGrid.innerHTML = '<div class="empty-note">No books found.</div>'; return; }
-  list.forEach(b=>{
-    const card = document.createElement('div'); card.className='book-card';
-    const coverWrap = document.createElement('div'); coverWrap.className='cover-wrap';
-    if (b.cover){
-      const img = document.createElement('img'); img.src = b.cover;
-      img.alt = b.title;
-      img.onload = ()=>{/* ok */};
-      img.onerror = ()=>{ coverWrap.innerHTML = `<div class="cover-placeholder">${shortTitle(b.title)}</div>`; };
-      coverWrap.appendChild(img);
-    } else {
-      coverWrap.innerHTML = `<div class="cover-placeholder">${shortTitle(b.title)}</div>`;
+/* Render home page with genre sections */
+function renderHomePage(list=books){
+  homeContent.innerHTML = '';
+  if (!list.length) { 
+    homeContent.innerHTML = '<div class="empty-note">No books found.</div>'; 
+    return; 
+  }
+  
+  // Group books by genre
+  const booksByGenre = {};
+  list.forEach(book => {
+    if (!booksByGenre[book.genre]) {
+      booksByGenre[book.genre] = [];
     }
-
-    const title = document.createElement('div'); title.className='book-title'; title.textContent = b.title;
-    const author = document.createElement('div'); author.className='book-author'; author.textContent = b.author || '';
-    const genre = document.createElement('div'); genre.className='book-genre'; genre.textContent = b.genre || '';
-    const row = document.createElement('div'); row.className='card-row';
-
-    const readBtn = document.createElement('button'); readBtn.className='btn'; readBtn.innerHTML = '📖 Read';
-    readBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openBook(b); });
-
-    const rlBtn = document.createElement('button'); rlBtn.className='small-btn'; rlBtn.textContent = isInReadLater(b.textUrl) ? 'Remove' : 'Read Later';
-    rlBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleReadLater(b); rlBtn.textContent = isInReadLater(b.textUrl) ? 'Remove' : 'Read Later'; });
-
-    row.appendChild(readBtn); row.appendChild(rlBtn);
-    card.appendChild(coverWrap); card.appendChild(title); card.appendChild(author); card.appendChild(genre); card.appendChild(row);
-    // Clicking card reads
-    card.addEventListener('click', ()=> openBook(b));
-    booksGrid.appendChild(card);
+    booksByGenre[book.genre].push(book);
   });
+  
+  // Initialize display counts if not set
+  Object.keys(booksByGenre).forEach(genre => {
+    if (!genreDisplayCounts[genre]) {
+      genreDisplayCounts[genre] = BOOKS_PER_GENRE;
+    }
+  });
+  
+  // Create sections for each genre
+  Object.keys(booksByGenre).forEach(genre => {
+    const genreBooks = booksByGenre[genre];
+    const displayCount = genreDisplayCounts[genre];
+    const booksToShow = genreBooks.slice(0, displayCount);
+    
+    const genreSection = document.createElement('div');
+    genreSection.className = 'genre-section';
+    
+    const genreHeader = document.createElement('div');
+    genreHeader.className = 'genre-header';
+    
+    const genreTitle = document.createElement('div');
+    genreTitle.className = 'genre-title';
+    genreTitle.textContent = genre;
+    
+    const genreCount = document.createElement('div');
+    genreCount.className = 'genre-count';
+    genreCount.textContent = `${booksToShow.length} of ${genreBooks.length} books`;
+    
+    genreHeader.appendChild(genreTitle);
+    genreHeader.appendChild(genreCount);
+    genreSection.appendChild(genreHeader);
+    
+    const booksGrid = document.createElement('div');
+    booksGrid.className = 'books-grid';
+    
+    booksToShow.forEach(book => {
+      const card = createBookCard(book);
+      booksGrid.appendChild(card);
+    });
+    
+    genreSection.appendChild(booksGrid);
+    
+    // Add "Load More" button if there are more books to show
+    if (displayCount < genreBooks.length) {
+      const loadMoreBtn = document.createElement('button');
+      loadMoreBtn.className = 'load-more-btn';
+      loadMoreBtn.textContent = `Load More (${genreBooks.length - displayCount} remaining)`;
+      loadMoreBtn.addEventListener('click', () => {
+        genreDisplayCounts[genre] += BOOKS_PER_GENRE;
+        renderHomePage(list);
+      });
+      genreSection.appendChild(loadMoreBtn);
+    }
+    
+    homeContent.appendChild(genreSection);
+  });
+}
+
+/* Create book card for home page */
+function createBookCard(book) {
+  const card = document.createElement('div'); 
+  card.className='book-card';
+  
+  const coverWrap = document.createElement('div'); 
+  coverWrap.className='cover-wrap';
+  
+  if (book.cover){
+    const img = document.createElement('img'); 
+    img.src = book.cover;
+    img.alt = book.title;
+    img.onload = ()=>{/* ok */};
+    img.onerror = ()=>{ coverWrap.innerHTML = `<div class="cover-placeholder">${shortTitle(book.title)}</div>`; };
+    coverWrap.appendChild(img);
+  } else {
+    coverWrap.innerHTML = `<div class="cover-placeholder">${shortTitle(book.title)}</div>`;
+  }
+
+  const title = document.createElement('div'); 
+  title.className='book-title'; 
+  title.textContent = book.title;
+  
+  const author = document.createElement('div'); 
+  author.className='book-author'; 
+  author.textContent = book.author || '';
+  
+  const genre = document.createElement('div'); 
+  genre.className='book-genre'; 
+  genre.textContent = book.genre || '';
+  
+  const row = document.createElement('div'); 
+  row.className='card-row';
+
+  const readBtn = document.createElement('button'); 
+  readBtn.className='btn'; 
+  readBtn.innerHTML = '📖 Read';
+  readBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openBook(book); });
+
+  const rlBtn = document.createElement('button'); 
+  rlBtn.className='small-btn'; 
+  rlBtn.textContent = isInReadLater(book.textUrl) ? 'Remove' : 'Read Later';
+  rlBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleReadLater(book); rlBtn.textContent = isInReadLater(book.textUrl) ? 'Remove' : 'Read Later'; });
+
+  row.appendChild(readBtn); 
+  row.appendChild(rlBtn);
+  card.appendChild(coverWrap); 
+  card.appendChild(title); 
+  card.appendChild(author); 
+  card.appendChild(genre); 
+  card.appendChild(row);
+  
+  // Clicking card reads
+  card.addEventListener('click', ()=> openBook(book));
+  
+  return card;
 }
 
 /* helper short title */
@@ -752,27 +1182,63 @@ function shortTitle(t){
 
 /* Genre filter / search */
 function populateGenreFilter(){
-  const sel = document.getElementById('genreFilter'); sel.innerHTML = '<option value="">All Genres</option>';
+  const sel = document.getElementById('genreFilter'); 
+  sel.innerHTML = '<option value="">All Genres</option>';
   const uniq = [...new Set(books.map(b=>b.genre).filter(Boolean))].sort();
-  uniq.forEach(g=>{ const o=document.createElement('option'); o.value=g; o.textContent=g; sel.appendChild(o); });
+  uniq.forEach(g=>{ 
+    const o=document.createElement('option'); 
+    o.value=g; 
+    o.textContent=g; 
+    sel.appendChild(o); 
+  });
 }
+
 document.getElementById('searchInput').addEventListener('input', ()=>{
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
   const genre = document.getElementById('genreFilter').value;
   const filtered = books.filter(b => ((b.title + ' ' + (b.author||'') + ' ' + (b.genre||'')).toLowerCase().includes(q) && (!genre || b.genre===genre)));
-  renderBookGrid(filtered);
+  renderHomePage(filtered);
 });
+
 document.getElementById('genreFilter').addEventListener('change', ()=> document.getElementById('searchInput').dispatchEvent(new Event('input')));
 
 /* READ LATER (localStorage) */
-function getReadLater(){ try{ return JSON.parse(localStorage.getItem('gutenberg:readlater')||'[]') }catch(e){ return [] } }
-function saveReadLater(list){ localStorage.setItem('gutenberg:readlater', JSON.stringify(list)); }
-function isInReadLater(url){ if(!url) return false; return getReadLater().some(i=>i.textUrl===url); }
+function getReadLater(){ 
+  try{ 
+    return JSON.parse(localStorage.getItem('gutenberg:readlater')||'[]') 
+  }catch(e){ 
+    return [] 
+  } 
+}
+
+function saveReadLater(list){ 
+  localStorage.setItem('gutenberg:readlater', JSON.stringify(list)); 
+}
+
+function isInReadLater(url){ 
+  if(!url) return false; 
+  return getReadLater().some(i=>i.textUrl===url); 
+}
+
 function toggleReadLater(book){
   const list = getReadLater();
   const idx = list.findIndex(b=>b.textUrl===book.textUrl);
-  if (idx === -1) { list.unshift({title:book.title, author:book.author, textUrl:book.textUrl, cover:book.cover}); saveReadLater(list); showToast('Added to Read Later'); }
-  else { list.splice(idx,1); saveReadLater(list); showToast('Removed from Read Later'); }
+  if (idx === -1) { 
+    list.unshift({
+      title:book.title, 
+      author:book.author, 
+      textUrl:book.textUrl, 
+      cover:book.cover,
+      addedDate: new Date().toISOString()
+    }); 
+    saveReadLater(list); 
+    showToast('Added to Read Later'); 
+  }
+  else { 
+    list.splice(idx,1); 
+    saveReadLater(list); 
+    showToast('Removed from Read Later'); 
+  }
   renderReadLaterList();
 }
 
@@ -781,19 +1247,74 @@ function renderReadLaterList(){
   const wrap = document.getElementById('readLaterList');
   const empty = document.getElementById('readLaterEmpty');
   const list = getReadLater();
-  wrap.innerHTML=''; empty.style.display='none';
-  if (!list.length){ empty.style.display='block'; return; }
+  wrap.innerHTML=''; 
+  empty.style.display='none';
+  
+  if (!list.length){ 
+    empty.style.display='block'; 
+    return; 
+  }
+  
   list.forEach(b=>{
-    const card=document.createElement('div'); card.className='book-card';
-    const coverWrap = document.createElement('div'); coverWrap.className='cover-wrap';
-    if (b.cover){ const img=document.createElement('img'); img.src=b.cover; img.onerror=()=>{coverWrap.innerHTML=`<div class="cover-placeholder">${shortTitle(b.title)}</div>`}; coverWrap.appendChild(img); } else coverWrap.innerHTML=`<div class="cover-placeholder">${shortTitle(b.title)}</div>`;
-    const title=document.createElement('div'); title.className='book-title'; title.textContent=b.title;
-    const author=document.createElement('div'); author.className='book-author'; author.textContent=b.author||'';
-    const row=document.createElement('div'); row.className='card-row';
-    const openBtn=document.createElement('button'); openBtn.className='btn'; openBtn.textContent='Open'; openBtn.addEventListener('click', ()=> openBook(b));
-    const removeBtn=document.createElement('button'); removeBtn.className='small-btn'; removeBtn.textContent='Remove'; removeBtn.addEventListener('click', ()=>{ toggleReadLater(b); renderReadLaterList(); });
-    row.appendChild(openBtn); row.appendChild(removeBtn);
-    card.appendChild(coverWrap); card.appendChild(title); card.appendChild(author); card.appendChild(row);
+    const card = document.createElement('div');
+    card.className = 'readlater-card';
+    
+    const coverWrap = document.createElement('div');
+    coverWrap.className = 'readlater-cover';
+    
+    if (b.cover){ 
+      const img = document.createElement('img'); 
+      img.src = b.cover; 
+      img.onerror = () => {
+        coverWrap.innerHTML = `<div class="cover-placeholder">${shortTitle(b.title)}</div>`;
+      }; 
+      coverWrap.appendChild(img); 
+    } else {
+      coverWrap.innerHTML = `<div class="cover-placeholder">${shortTitle(b.title)}</div>`;
+    }
+    
+    const info = document.createElement('div');
+    info.className = 'readlater-info';
+    
+    const title = document.createElement('div');
+    title.className = 'readlater-title';
+    title.textContent = b.title;
+    
+    const author = document.createElement('div');
+    author.className = 'readlater-author';
+    author.textContent = b.author || '';
+    
+    const date = document.createElement('div');
+    date.className = 'readlater-date';
+    date.textContent = `Added: ${formatDate(b.addedDate)}`;
+    
+    info.appendChild(title);
+    info.appendChild(author);
+    info.appendChild(date);
+    
+    const actions = document.createElement('div');
+    actions.className = 'readlater-actions';
+    
+    const openBtn = document.createElement('button');
+    openBtn.className = 'readlater-open';
+    openBtn.textContent = 'Open';
+    openBtn.addEventListener('click', () => openBook(b));
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'readlater-remove';
+    removeBtn.textContent = 'Remove';
+    removeBtn.addEventListener('click', () => { 
+      toggleReadLater(b); 
+      renderReadLaterList(); 
+    });
+    
+    actions.appendChild(openBtn);
+    actions.appendChild(removeBtn);
+    
+    card.appendChild(coverWrap);
+    card.appendChild(info);
+    card.appendChild(actions);
+    
     wrap.appendChild(card);
   });
 }
@@ -807,33 +1328,135 @@ function getContinueList(){
     if (key.startsWith('gutenberg:lastpage:')) {
       const url = key.replace('gutenberg:lastpage:','');
       const idx = parseInt(localStorage.getItem(key),10) || 0;
+      const lastRead = localStorage.getItem('gutenberg:lastread:' + url) || '';
+      
       // find book meta from books[] or readLater
       let meta = books.find(b=>b.textUrl===url) || getReadLater().find(b=>b.textUrl===url) || null;
-      if (meta) list.push({title:meta.title, author:meta.author, textUrl:url, lastPage:idx});
-      else list.push({title:url.split('/').slice(-1)[0], author:'', textUrl:url, lastPage:idx});
+      if (meta) {
+        list.push({
+          title:meta.title, 
+          author:meta.author, 
+          textUrl:url, 
+          lastPage:idx,
+          lastRead: lastRead,
+          totalPages: parseInt(localStorage.getItem('gutenberg:totalpages:' + url) || '1', 10)
+        });
+      } else {
+        list.push({
+          title:url.split('/').slice(-1)[0], 
+          author:'', 
+          textUrl:url, 
+          lastPage:idx,
+          lastRead: lastRead,
+          totalPages: parseInt(localStorage.getItem('gutenberg:totalpages:' + url) || '1', 10)
+        });
+      }
     }
   }
-  // sort by most recently updated? can't easily get timestamp; keep insertion order
-  return list;
+  // sort by most recently read
+  return list.sort((a, b) => new Date(b.lastRead) - new Date(a.lastRead));
 }
 
 function renderContinueList(){
   const wrap = document.getElementById('continueList');
   const empty = document.getElementById('continueEmpty');
   const list = getContinueList();
-  wrap.innerHTML=''; empty.style.display='none';
-  if (!list.length){ empty.style.display='block'; return; }
+  wrap.innerHTML=''; 
+  empty.style.display='none';
+  
+  if (!list.length){ 
+    empty.style.display='block'; 
+    return; 
+  }
+  
   list.forEach(item=>{
-    const card=document.createElement('div'); card.className='book-card';
-    const title=document.createElement('div'); title.className='book-title'; title.textContent=item.title;
-    const author=document.createElement('div'); author.className='book-author'; author.textContent=item.author||'';
-    const btnRow=document.createElement('div'); btnRow.className='card-row';
-    const openBtn=document.createElement('button'); openBtn.className='btn'; openBtn.textContent='Continue'; openBtn.addEventListener('click', ()=> openBook({title:item.title,textUrl:item.textUrl}));
-    const removeBtn=document.createElement('button'); removeBtn.className='small-btn'; removeBtn.textContent='Remove'; removeBtn.addEventListener('click', ()=> { localStorage.removeItem('gutenberg:lastpage:' + item.textUrl); renderContinueList(); });
-    btnRow.appendChild(openBtn); btnRow.appendChild(removeBtn);
-    card.appendChild(title); card.appendChild(author); card.appendChild(btnRow);
+    const card = document.createElement('div');
+    card.className = 'continue-card';
+    
+    const header = document.createElement('div');
+    header.className = 'continue-header';
+    
+    const title = document.createElement('div');
+    title.className = 'continue-title';
+    title.textContent = item.title;
+    
+    const date = document.createElement('div');
+    date.className = 'continue-date';
+    date.textContent = item.lastRead ? formatDate(item.lastRead) : 'Unknown';
+    
+    header.appendChild(title);
+    header.appendChild(date);
+    
+    const author = document.createElement('div');
+    author.className = 'continue-author';
+    author.textContent = item.author || '';
+    
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'progress-container';
+    
+    const progressInfo = document.createElement('div');
+    progressInfo.className = 'progress-info';
+    progressInfo.innerHTML = `<span>Page ${item.lastPage + 1} of ${item.totalPages}</span><span>${Math.round((item.lastPage / item.totalPages) * 100)}%</span>`;
+    
+    const progressBar = document.createElement('div');
+    progressBar.className = 'progress-bar';
+    
+    const progressFill = document.createElement('div');
+    progressFill.className = 'progress-fill';
+    progressFill.style.width = `${(item.lastPage / item.totalPages) * 100}%`;
+    
+    progressBar.appendChild(progressFill);
+    progressContainer.appendChild(progressInfo);
+    progressContainer.appendChild(progressBar);
+    
+    const actions = document.createElement('div');
+    actions.className = 'continue-actions';
+    
+    const continueBtn = document.createElement('button');
+    continueBtn.className = 'continue-btn';
+    continueBtn.textContent = 'Continue';
+    continueBtn.addEventListener('click', () => openBook({title:item.title, textUrl:item.textUrl}));
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn';
+    removeBtn.textContent = 'Remove';
+    removeBtn.addEventListener('click', () => { 
+      localStorage.removeItem('gutenberg:lastpage:' + item.textUrl);
+      localStorage.removeItem('gutenberg:lastread:' + item.textUrl);
+      localStorage.removeItem('gutenberg:totalpages:' + item.textUrl);
+      renderContinueList(); 
+    });
+    
+    actions.appendChild(continueBtn);
+    actions.appendChild(removeBtn);
+    
+    card.appendChild(header);
+    card.appendChild(author);
+    card.appendChild(progressContainer);
+    card.appendChild(actions);
+    
     wrap.appendChild(card);
   });
+}
+
+/* Format date for display */
+function formatDate(dateString) {
+  if (!dateString) return 'Unknown';
+  
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now - date);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 0) {
+    return 'Today';
+  } else if (diffDays === 1) {
+    return 'Yesterday';
+  } else if (diffDays < 7) {
+    return `${diffDays} days ago`;
+  } else {
+    return date.toLocaleDateString();
+  }
 }
 
 /* Open book: fetch via worker, clean, paginate and render at saved page (if any) */
@@ -982,6 +1605,11 @@ function paginateText(plain, wordsPerPageLocal){
   
   // Ensure non-empty
   if (!pages.length) pages = ['<p>No content extracted.</p>'];
+  
+  // Save total pages for progress tracking
+  if (currentBook && currentBook.textUrl) {
+    localStorage.setItem('gutenberg:totalpages:' + currentBook.textUrl, pages.length.toString());
+  }
 }
 
 /* render a page (no horizontal scroll) */
@@ -992,8 +1620,13 @@ function renderPage(idx){
   pageContent.style.fontSize = fontSize + 'px';
   pageContent.innerHTML = pages[currentPage];
   pageIndicator.textContent = `Page ${currentPage + 1} / ${pages.length}`;
-  // save last page
-  try { localStorage.setItem('gutenberg:lastpage:' + currentBook.textUrl, String(currentPage)); } catch(e){}
+  
+  // save last page and last read timestamp
+  try { 
+    localStorage.setItem('gutenberg:lastpage:' + currentBook.textUrl, String(currentPage));
+    localStorage.setItem('gutenberg:lastread:' + currentBook.textUrl, new Date().toISOString());
+  } catch(e){}
+  
   // ensure continue list refresh
   renderContinueList();
   
