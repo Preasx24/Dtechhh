@@ -346,6 +346,25 @@
     transform: translateY(-2px);
   }
 
+  .load-more-genres-btn {
+    background: #8b6b4c;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    display: block;
+    margin: 20px auto 0;
+    transition: all 0.2s ease;
+    font-size: 16px;
+  }
+
+  .load-more-genres-btn:hover {
+    background: #6d533c;
+    transform: translateY(-2px);
+  }
+
   /* Continue Reading Section - Modern Progress Design */
   #continueSection {
     background: linear-gradient(135deg, #f0f7f0 0%, #d9ead9 100%);
@@ -905,6 +924,7 @@
     <h2 class="section-title">Browse Collection</h2>
     <div class="stats" id="stats">Loading books...</div>
     <div id="homeContent"></div>
+    <button id="loadMoreGenres" class="load-more-genres-btn" style="display:none">Load More Genres</button>
   </div>
 
   <div id="continueSection" style="display:none">
@@ -954,6 +974,8 @@ const WORDS_PER_PAGE_DEFAULT = 500;         // Change this value to adjust words
 const MIN_BALANCE_RATIO = 0.40;             // minimum fraction for last page before rebalancing
 const FONT_SIZE_DEFAULT = 9;                // Change this value to adjust font size
 const BOOKS_PER_GENRE = 10;                 // Number of books to show per genre initially
+const GENRES_PER_LOAD = 10;                 // Number of genres to show initially
+const GENRES_PER_FILTER = 40;               // Number of genres to show in filter dropdown
 
 /* STATE */
 let books = [];
@@ -964,6 +986,8 @@ let wordsPerPage = WORDS_PER_PAGE_DEFAULT;
 let fontSize = FONT_SIZE_DEFAULT;
 let pageIndicatorTimeout;
 let genreDisplayCounts = {}; // Track how many books are shown per genre
+let genresToShow = GENRES_PER_LOAD; // Track how many genres to display
+let rawData = ""; // Store the raw data for lazy parsing
 
 /* UI refs */
 const booksGrid = document.getElementById('booksGrid');
@@ -974,6 +998,7 @@ const pageIndicator = document.getElementById('pageIndicator');
 const readerEl = document.getElementById('reader');
 const readerTitle = document.getElementById('readerTitle');
 const readerFooter = document.getElementById('readerFooter');
+const loadMoreGenresBtn = document.getElementById('loadMoreGenres');
 
 /* Tabs */
 const tabHome = document.getElementById('tab-home');
@@ -1002,8 +1027,8 @@ async function loadBooks(){
   try {
     const r = await fetch('data.txt', {cache:'no-store'});
     if(!r.ok) throw new Error('Failed to fetch data.txt');
-    const txt = await r.text();
-    parseDataTxt(txt);
+    rawData = await r.text();
+    parseDataTxt(rawData, true); // Initial parse with limited data
   } catch(err){
     console.error('loadBooks', err);
     homeContent.innerHTML = '<div class="empty-note">Error loading data.txt — open console.</div>';
@@ -1011,11 +1036,14 @@ async function loadBooks(){
   }
 }
 
-function parseDataTxt(text){
+/* Parse data.txt with lazy loading support */
+function parseDataTxt(text, initialLoad = false){
   const lines = text.split(/\r?\n/);
   let currentGenre = '';
   let currentBook = null;
   const parsed = [];
+  let bookCount = 0;
+  let genreCount = 0;
 
   for (let raw of lines){
     const line = raw.trim();
@@ -1023,11 +1051,25 @@ function parseDataTxt(text){
     if (line.includes('🎯 GENRE:')) {
       const m = line.match(/🎯\s*GENRE:\s*([^\(]+)/i);
       currentGenre = m ? m[1].trim() : currentGenre;
+      genreCount++;
+      
+      // If initial load and we've reached our genre limit, stop parsing
+      if (initialLoad && genreCount > genresToShow) {
+        break;
+      }
       continue;
     }
     const bs = line.match(/^📖\s*BOOK\s*\d+\s*:\s*(.+)$/i);
     if (bs){
-      if (currentBook) parsed.push(currentBook);
+      if (currentBook) {
+        parsed.push(currentBook);
+        bookCount++;
+        
+        // If initial load and we've reached our book limit, stop parsing
+        if (initialLoad && bookCount >= BOOKS_PER_GENRE * genresToShow) {
+          break;
+        }
+      }
       currentBook = { genre: currentGenre, title: bs[1].trim() };
       continue;
     }
@@ -1039,23 +1081,60 @@ function parseDataTxt(text){
       const coverMatch = line.match(/🖼️\s*Cover:\s*(.+)/i);
       if (coverMatch) currentBook.cover = coverMatch[1].trim();
     }
-    else if (/^-{6,}/.test(line)){ parsed.push(currentBook); currentBook = null; }
+    else if (/^-{6,}/.test(line)){ 
+      parsed.push(currentBook); 
+      bookCount++;
+      currentBook = null; 
+      
+      // If initial load and we've reached our book limit, stop parsing
+      if (initialLoad && bookCount >= BOOKS_PER_GENRE * genresToShow) {
+        break;
+      }
+    }
   }
   if (currentBook) parsed.push(currentBook);
 
-  books = parsed.map(b => ({
-    title: b.title || 'Untitled',
-    author: b.author || 'Unknown',
-    genre: b.genre || 'Unknown',
-    textUrl: b.textUrl || '',
-    cover: b.cover || ''
-  }));
+  // If this is not the initial load, append to existing books
+  if (!initialLoad) {
+    books = books.concat(parsed);
+  } else {
+    books = parsed;
+  }
 
   renderHomePage();
   statsEl.textContent = `📚 ${books.length} books loaded • Use search/genre`;
   populateGenreFilter();
   renderContinueList();
+  
+  // Show/hide load more genres button
+  const totalGenres = countGenresInData(rawData);
+  if (totalGenres > genresToShow) {
+    loadMoreGenresBtn.style.display = 'block';
+  } else {
+    loadMoreGenresBtn.style.display = 'none';
+  }
 }
+
+/* Count total genres in the data file */
+function countGenresInData(text) {
+  const lines = text.split(/\r?\n/);
+  let genreCount = 0;
+  
+  for (let raw of lines){
+    const line = raw.trim();
+    if (line.includes('🎯 GENRE:')) {
+      genreCount++;
+    }
+  }
+  
+  return genreCount;
+}
+
+/* Load more genres */
+loadMoreGenresBtn.addEventListener('click', () => {
+  genresToShow += GENRES_PER_LOAD;
+  parseDataTxt(rawData, false); // Parse more data without resetting
+});
 
 /* Render home page with genre sections */
 function renderHomePage(list=books){
@@ -1218,8 +1297,11 @@ function populateGenreFilter(){
     return genreCounts[b] - genreCounts[a];
   });
   
+  // Limit to top GENRES_PER_FILTER genres
+  const topGenres = sortedGenres.slice(0, GENRES_PER_FILTER);
+  
   // Add options with counts
-  sortedGenres.forEach(g => { 
+  topGenres.forEach(g => { 
     const o = document.createElement('option'); 
     o.value = g; 
     o.textContent = `${g} (${genreCounts[g]})`; 
