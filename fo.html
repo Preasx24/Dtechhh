@@ -1,564 +1,585 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Gutenberg Library — Reader (Paged)</title>
-  <style>
-    :root {
-      --bg: #ffffff;
-      --page-bg: #fffbe9;
-      --accent: #2d9cdb;
-      --text-color: #111;
-      --book-font: "Georgia", "Times New Roman", serif;
-      --reader-font-size: 14px; /* default smaller font to fit more words */
-      --reader-gap: 0px;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gutenberg Library — Paged Reader + Read Later</title>
+<style>
+  :root{
+    --accent:#2d9cdb;
+    --text:#111;
+    --muted:#6b7280;
+    --book-font: "Georgia","Times New Roman", serif;
+    --reader-font-size: 12px; /* smaller by default */
+    --page-words: 500;
+  }
 
-    /* page layout: same as before but reader touches edges and is full viewport */
-    html,body { height:100%; margin:0; }
-    body { font-family: system-ui, Arial, sans-serif; background:#f5f7fa; color:var(--text-color); }
+  html,body{height:100%;margin:0;font-family:system-ui, Arial, sans-serif;color:var(--text);background:#f4f6f8}
+  .topbar{background:#fff;padding:12px 18px;border-bottom:1px solid #e6e9ee;display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:30}
+  .brand{font-weight:700;font-size:18px}
+  .tabs{display:flex;gap:8px}
+  .tab{padding:8px 12px;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer}
+  .tab.active{background:var(--accent);color:#fff}
 
-    .site-container { max-width:1100px; margin:0 auto; padding:18px; }
-    header h1 { margin:0 0 6px 0; }
-    .controls { display:flex; gap:12px; margin:10px 0 18px; align-items:center; }
-    #searchInput { padding:8px 10px; width:320px; border-radius:6px; border:1px solid #ddd; }
-    #genreFilter { padding:8px; border-radius:6px; border:1px solid #ddd; }
-    .stats { margin-bottom:12px; color:#555; }
-    .books-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
-    .book-card { background:#fff; border-radius:8px; padding:12px; box-shadow:0 2px 8px rgba(0,0,0,.06); display:flex; flex-direction:column; gap:8px; min-height:220px; cursor:pointer; }
-    .book-cover { height:140px; border-radius:6px; background:#eee; display:flex; align-items:center; justify-content:center; font-weight:600; text-align:center; padding:10px; background-size:cover; background-position:center; color:#222; }
-    .book-title { font-weight:700; font-size:15px; }
-    .book-author { color:#666; font-size:13px; }
-    .book-meta { color:#666; font-size:12px; margin-top:6px; }
-    .read-btn { margin-top:auto; border:none; background:var(--accent); color:#fff; padding:8px 10px; border-radius:6px; cursor:pointer; }
+  .search-row{display:flex;gap:10px;align-items:center;padding:14px 18px;background:#fff;border-bottom:1px solid #e6e9ee}
+  #searchInput{padding:8px;border-radius:8px;border:1px solid #ddd;width:320px}
+  #genreFilter{padding:8px;border-radius:8px;border:1px solid #ddd}
 
-    /* FULLSCREEN READER (touches edges; no rounded corners) */
-    .reader-fullscreen {
-      display:none;
-      position:fixed;
-      inset:0;
-      z-index:9999;
-      background:var(--bg);
-      color:var(--text-color);
-      font-family: var(--book-font);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
+  .layout{max-width:1100px;margin:18px auto;padding:0 12px}
+  .stats{color:var(--muted);margin:8px 0}
+  .books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
 
-    .reader-header {
-      height:56px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:8px 12px;
-      border-bottom:1px solid #eee;
-      background:linear-gradient(180deg,#fff,#fafafa);
-      box-shadow:0 1px 0 rgba(0,0,0,0.04);
-    }
-    .reader-title { font-weight:700; font-size:16px; max-width:70%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .book-card{background:#fff;border-radius:10px;padding:12px;box-shadow:0 6px 18px rgba(15,15,15,0.05);display:flex;flex-direction:column;gap:10px;min-height:220px}
+  .cover-wrap{height:140px;border-radius:8px;overflow:hidden;background:#f3f3f3;display:flex;align-items:center;justify-content:center}
+  .cover-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+  .cover-placeholder{padding:8px;text-align:center;font-weight:700;color:#333}
+  .book-title{font-weight:700;font-size:15px}
+  .book-author{color:var(--muted);font-size:13px}
+  .card-row{display:flex;gap:8px;align-items:center;margin-top:auto}
+  .btn{padding:8px 10px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+  .btn.secondary{background:#efefef;color:#333}
+  .small-btn{padding:6px 8px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer}
 
-    .reader-controls { display:flex; gap:8px; align-items:center; }
-    .reader-controls button { padding:8px 10px; border-radius:6px; border:none; background:#efefef; cursor:pointer; }
-    .reader-controls button.primary { background:var(--accent); color:#fff; }
+  /* Page reader - FULLSCREEN */
+  .reader-fullscreen{display:none;position:fixed;inset:0;background:#fff;color:var(--text);z-index:9999;overflow:hidden}
+  .reader-header{height:56px;padding:10px 14px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between}
+  .reader-title{font-weight:700;font-family:var(--book-font);font-size:16px;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .reader-controls{display:flex;gap:8px;align-items:center}
+  .reader-controls button{padding:8px 10px;border-radius:8px;border:none;background:#f3f3f3;cursor:pointer}
+  .reader-body{height:calc(100% - 56px);display:flex;align-items:center;justify-content:center;background:#fff}
+  .page-container{width:100%;height:100%;display:flex;align-items:flex-start;justify-content:center;box-sizing:border-box;padding:28px 48px}
+  .page{width:100%;height:100%;overflow:hidden;display:flex;flex-direction:column}
+  .page-content{flex:1;overflow:auto;font-family:var(--book-font);font-size:var(--reader-font-size);line-height:1.75;text-align:justify;padding-right:8px;hyphens:auto}
+  .page-content h1{font-size:20px;text-align:center;margin:10px 0}
+  .page-content h2.chapter{font-size:16px;text-align:center;margin:18px 0}
+  .page-content p{margin:0 0 12px}
+  .reader-footer{position:absolute;bottom:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+  .footer-controls{pointer-events:auto;display:flex;gap:8px;align-items:center}
+  .page-indicator{background:#fff;padding:6px 10px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+  .nav-hit-left,.nav-hit-right{position:absolute;top:56px;bottom:0;width:30%;pointer-events:auto}
 
-    .reader-body {
-      height: calc(100% - 56px);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:var(--page-bg);
-      overflow:hidden;
-      touch-action: pan-y; /* allow vertical scroll on page if needed but we will disallow horizontal pan */
-    }
+  /* small screens */
+  @media (max-width:720px){
+    .page-container{padding:18px}
+    :root{--reader-font-size: 11px}
+  }
 
-    /* single page box that takes full viewport width and height minus header */
-    .page-slot {
-      width:100%;
-      height:100%;
-      padding:28px 40px; /* page inner padding */
-      box-sizing:border-box;
-      overflow:hidden;
-      display:flex;
-      align-items:flex-start;
-      justify-content:center;
-    }
+  /* lists for Continue/Read Later */
+  .list-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .empty-note{color:var(--muted);padding:12px;background:#fff;border-radius:8px}
 
-    .page-inner {
-      width:100%;
-      max-width:none;
-      height:100%;
-      overflow:hidden;
-      display:block;
-    }
-
-    /* The text area - we render the current page content here */
-    .page-text {
-      font-size: var(--reader-font-size);
-      line-height:1.75;
-      hyphens:auto;
-      color:var(--text-color);
-      text-align:justify;
-      height:100%;
-      overflow:auto; /* vertical scroll inside a page allowed only if content slightly overflows */
-      padding-right:6px;
-      -webkit-overflow-scrolling:touch;
-    }
-
-    .page-text h1 { text-align:center; margin:6px 0 14px; font-size:20px; }
-    .page-text h2.chapter { text-align:center; margin:18px 0 12px; font-size:16px; }
-    .page-text p { margin:0 0 12px; }
-
-    /* page footer for small controls (mobile) */
-    .reader-footer {
-      position:absolute;
-      bottom:12px;
-      left:12px;
-      right:12px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      pointer-events:none; /* buttons will override to allow clicks */
-    }
-
-    .footer-controls { pointer-events:auto; display:flex; gap:8px; }
-    .page-indicator { font-size:14px; color:#333; padding:6px 10px; background:#fff; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
-
-    /* Prev/Next large hit areas left/right for swipe/tap (invisible) */
-    .nav-hit-left, .nav-hit-right {
-      position:absolute;
-      top:56px;
-      bottom:0;
-      width:20%;
-      pointer-events:auto;
-    }
-    .nav-hit-left { left:0; }
-    .nav-hit-right { right:0; }
-
-    /* small-screen adjustments */
-    @media (max-width:800px) {
-      .page-slot { padding:18px; }
-      :root { --reader-font-size:13px; }
-    }
-  </style>
+</style>
 </head>
 <body>
-  <div class="site-container">
-    <header>
-      <h1>📚 Gutenberg Library</h1>
-      <div class="subtitle">Explore thousands of free classic books</div>
-    </header>
 
-    <div class="controls">
-      <input type="text" id="searchInput" placeholder="Search books by title or author...">
-      <select id="genreFilter">
-        <option value="">All Genres</option>
-      </select>
-    </div>
+<!-- Top -->
+<div class="topbar">
+  <div class="brand">📚 Gutenberg Library</div>
+  <div class="tabs" role="tablist" aria-label="Sections">
+    <div class="tab active" id="tab-home">Home</div>
+    <div class="tab" id="tab-continue">Continue Reading</div>
+    <div class="tab" id="tab-readlater">Read Later</div>
+  </div>
+</div>
 
+<!-- search/filters -->
+<div class="search-row">
+  <input id="searchInput" placeholder="Search by title, author, or subject..." />
+  <select id="genreFilter"><option value="">All Genres</option></select>
+</div>
+
+<!-- main content -->
+<div class="layout" id="layout">
+  <div id="homeSection">
     <div class="stats" id="stats">Loading books...</div>
-    <div class="books-grid" id="booksGrid"><div class="loading">Loading books from data.txt...</div></div>
+    <div class="books-grid" id="booksGrid"><div class="loading">Loading data.txt...</div></div>
   </div>
 
-  <!-- FULLSCREEN READER -->
-  <div class="reader-fullscreen" id="readerFullscreen" aria-hidden="true">
-    <div class="reader-header">
-      <div class="reader-title" id="readerTitle">Loading...</div>
-      <div class="reader-controls">
-        <button id="firstPageBtn" title="First">⏮</button>
-        <button id="prevBtn" title="Previous (Left arrow)">◀</button>
-        <div class="page-indicator" id="pageIndicator">Page 1 / 1</div>
-        <button id="nextBtn" title="Next (Right arrow)">▶</button>
-        <button id="lastPageBtn" title="Last">⏭</button>
-        <button id="decreaseFS" title="Smaller text">A-</button>
-        <button id="increaseFS" title="Larger text">A+</button>
-        <button id="closeReaderBtn" class="primary" title="Close reader">Close ✕</button>
-      </div>
-    </div>
+  <div id="continueSection" style="display:none">
+    <h3>Continue Reading</h3>
+    <div id="continueList" class="list-grid"></div>
+    <div id="continueEmpty" class="empty-note" style="display:none">Nothing to continue — open a book and it will appear here.</div>
+  </div>
 
-    <div class="reader-body" id="readerBody" role="document">
-      <div class="page-slot">
-        <div class="page-inner">
-          <div class="page-text" id="pageText" tabindex="0">Loading...</div>
-        </div>
-      </div>
+  <div id="readLaterSection" style="display:none">
+    <h3>Read Later</h3>
+    <div id="readLaterList" class="list-grid"></div>
+    <div id="readLaterEmpty" class="empty-note" style="display:none">No saved books — add some using the "Read Later" button on a book card.</div>
+  </div>
+</div>
 
-      <!-- invisible hit areas to tap for prev/next -->
-      <div class="nav-hit-left" id="navLeft"></div>
-      <div class="nav-hit-right" id="navRight"></div>
-
-      <div class="reader-footer">
-        <div class="footer-controls" style="pointer-events:auto;">
-          <button id="openOriginalBtn" title="Open original">Open original</button>
-        </div>
-      </div>
+<!-- Reader fullscreen -->
+<div class="reader-fullscreen" id="reader">
+  <div class="reader-header">
+    <div class="reader-title" id="readerTitle">Loading...</div>
+    <div class="reader-controls">
+      <button id="firstBtn" title="First">⏮</button>
+      <button id="prevBtn" title="Previous">◀</button>
+      <div class="page-indicator" id="pageIndicator">Page 1 / 1</div>
+      <button id="nextBtn" title="Next">▶</button>
+      <button id="lastBtn" title="Last">⏭</button>
+      <button id="decreaseFS" title="Smaller">A-</button>
+      <button id="increaseFS" title="Larger">A+</button>
+      <button id="closeReader" class="primary" style="background:var(--accent);color:#fff">Close ✕</button>
     </div>
   </div>
 
-  <script>
-  /* ================= CONFIG ================= */
-  const PROXY_URL = "https://silent-brook-9ad3.dtech2j.workers.dev/"; // <-- your worker
-  const PROXY_KEY = "dtech_secret"; // <-- your worker key
-  const WORDS_PER_PAGE = 300; // fixed words per page as requested
-  /* ========================================== */
+  <div class="reader-body">
+    <div class="page-container" id="pageContainer">
+      <div class="page">
+        <div class="page-content" id="pageContent">Loading...</div>
+      </div>
+    </div>
 
-  // site state
-  let books = [];
-  let currentBook = null;          // {title, textUrl, id}
-  let pages = [];                  // array of page strings (each page is HTML-ready)
-  let currentPage = 0;
-  let fontSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--reader-font-size')) || 14;
+    <div class="nav-hit-left" id="navLeft"></div>
+    <div class="nav-hit-right" id="navRight"></div>
 
-  // UI refs
-  const reader = document.getElementById('readerFullscreen');
-  const readerTitle = document.getElementById('readerTitle');
-  const pageText = document.getElementById('pageText');
-  const pageIndicator = document.getElementById('pageIndicator');
+    <div class="reader-footer">
+      <div class="footer-controls">
+        <button id="openOriginal">Open Original</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-  // -------------- load & parse data.txt (same approach) --------------
-  async function loadBooks() {
-    try {
-      const res = await fetch('data.txt', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Failed to fetch data.txt: ' + res.status);
-      const txt = await res.text();
-      parseBooks(txt);
-    } catch (err) {
-      console.error('loadBooks error:', err);
-      document.getElementById('booksGrid').innerHTML = '<div class="error">Error loading data.txt — check console</div>';
-      document.getElementById('stats').textContent = '📚 0 books loaded';
+<script>
+/* CONFIG */
+const PROXY_URL = "https://silent-brook-9ad3.dtech2j.workers.dev/"; // your Worker
+const PROXY_KEY = "dtech_secret";
+const WORDS_PER_PAGE_DEFAULT = 500;         // user requested default
+const MIN_BALANCE_RATIO = 0.40;             // minimum fraction for last page before rebalancing
+
+/* STATE */
+let books = [];
+let pages = [];            // current pages (HTML strings)
+let currentPage = 0;
+let currentBook = null;    // {title, textUrl, cover, author}
+let wordsPerPage = WORDS_PER_PAGE_DEFAULT;
+let fontSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--reader-font-size')) || 12;
+
+/* UI refs */
+const booksGrid = document.getElementById('booksGrid');
+const statsEl = document.getElementById('stats');
+const pageContent = document.getElementById('pageContent');
+const pageIndicator = document.getElementById('pageIndicator');
+const readerEl = document.getElementById('reader');
+const readerTitle = document.getElementById('readerTitle');
+
+/* Tabs */
+const tabHome = document.getElementById('tab-home');
+const tabContinue = document.getElementById('tab-continue');
+const tabReadLater = document.getElementById('tab-readlater');
+const homeSection = document.getElementById('homeSection');
+const continueSection = document.getElementById('continueSection');
+const readLaterSection = document.getElementById('readLaterSection');
+
+tabHome.addEventListener('click', () => switchTab('home'));
+tabContinue.addEventListener('click', () => switchTab('continue'));
+tabReadLater.addEventListener('click', () => switchTab('readlater'));
+
+function switchTab(id){
+  tabHome.classList.remove('active'); tabContinue.classList.remove('active'); tabReadLater.classList.remove('active');
+  homeSection.style.display = 'none'; continueSection.style.display = 'none'; readLaterSection.style.display = 'none';
+  if (id==='home'){ tabHome.classList.add('active'); homeSection.style.display='block'; }
+  if (id==='continue'){ tabContinue.classList.add('active'); continueSection.style.display='block'; renderContinueList(); }
+  if (id==='readlater'){ tabReadLater.classList.add('active'); readLaterSection.style.display='block'; renderReadLaterList(); }
+}
+
+/* load data.txt and parse */
+window.addEventListener('load', loadBooks);
+
+async function loadBooks(){
+  try {
+    const r = await fetch('data.txt', {cache:'no-store'});
+    if(!r.ok) throw new Error('Failed to fetch data.txt');
+    const txt = await r.text();
+    parseDataTxt(txt);
+  } catch(err){
+    console.error('loadBooks', err);
+    booksGrid.innerHTML = '<div class="empty-note">Error loading data.txt — open console.</div>';
+    statsEl.textContent = '📚 0 books loaded';
+  }
+}
+
+function parseDataTxt(text){
+  const lines = text.split(/\r?\n/);
+  let currentGenre = '';
+  let currentBook = null;
+  const parsed = [];
+
+  for (let raw of lines){
+    const line = raw.trim();
+    if (!line) continue;
+    if (line.includes('🎯 GENRE:')) {
+      const m = line.match(/🎯\s*GENRE:\s*([^\(]+)/i);
+      currentGenre = m ? m[1].trim() : currentGenre;
+      continue;
     }
-  }
-
-  function parseBooks(text) {
-    const lines = text.split(/\r?\n/);
-    let currentGenre = '';
-    let currentBook = null;
-    books = [];
-
-    for (let raw of lines) {
-      const line = raw.trim();
-      if (!line) continue;
-      if (line.includes('🎯 GENRE:')) {
-        const m = line.match(/🎯\s*GENRE:\s*([^\(]+)/i);
-        currentGenre = m ? m[1].trim() : currentGenre;
-        continue;
-      }
-
-      let start = line.match(/^📖\s*BOOK\s*\d+\s*:\s*(.+)$/i);
-      if (start) {
-        if (currentBook) books.push(currentBook);
-        currentBook = { genre: currentGenre, title: start[1].trim() };
-        continue;
-      }
-      if (!currentBook) continue;
-      if (line.includes('👤 Author:')) currentBook.author = line.split('👤 Author:')[1].trim();
-      else if (line.includes('📝 Text URL:')) currentBook.textUrl = line.split('📝 Text URL:')[1].trim();
-      else if (line.includes('🖼️  Cover:') || line.includes('🖼️ Cover:')) currentBook.cover = (line.split('🖼️')[1]||'').replace(/^Cover:\s*/i,'').trim();
-      else if (/^-{6,}/.test(line)) { books.push(currentBook); currentBook = null; }
+    const bs = line.match(/^📖\s*BOOK\s*\d+\s*:\s*(.+)$/i);
+    if (bs){
+      if (currentBook) parsed.push(currentBook);
+      currentBook = { genre: currentGenre, title: bs[1].trim() };
+      continue;
     }
-    if (currentBook) books.push(currentBook);
-
-    books = books.map(b => ({
-      title: b.title || 'Untitled',
-      author: b.author || 'Unknown',
-      genre: b.genre || 'Unknown',
-      textUrl: b.textUrl || '',
-      cover: b.cover || ''
-    }));
-
-    displayBooks(books);
-    document.getElementById('stats').textContent = `📚 ${books.length} books loaded`;
-    populateGenres();
+    if (!currentBook) continue;
+    if (line.includes('👤 Author:')) currentBook.author = line.split('👤 Author:')[1].trim();
+    else if (line.includes('📝 Text URL:')) currentBook.textUrl = line.split('📝 Text URL:')[1].trim();
+    else if (line.includes('🖼️  Cover:') || line.includes('🖼️ Cover:')) currentBook.cover = (line.split('🖼️')[1]||'').replace(/^Cover:\s*/i,'').trim();
+    else if (/^-{6,}/.test(line)){ parsed.push(currentBook); currentBook = null; }
   }
+  if (currentBook) parsed.push(currentBook);
 
-  function displayBooks(list) {
-    const grid = document.getElementById('booksGrid');
-    grid.innerHTML = '';
-    if (!list || list.length === 0) { grid.innerHTML = '<div class="no-books">No books found.</div>'; return; }
+  books = parsed.map(b => ({
+    title: b.title || 'Untitled',
+    author: b.author || 'Unknown',
+    genre: b.genre || 'Unknown',
+    textUrl: b.textUrl || '',
+    cover: b.cover || ''
+  }));
 
-    list.forEach(book => {
-      const card = document.createElement('div');
-      card.className = 'book-card';
-      card.addEventListener('click', () => openBook(book.textUrl, book.title));
+  renderBookGrid();
+  statsEl.textContent = `📚 ${books.length} books loaded • Use search/genre`;
+  populateGenreFilter();
+  renderContinueList();
+}
 
-      const cover = document.createElement('div'); cover.className = 'book-cover';
-      if (book.cover) { cover.style.backgroundImage = `url("${book.cover}")`; } else { cover.textContent = book.title.substring(0,32); }
-      const t = document.createElement('div'); t.className = 'book-title'; t.textContent = book.title;
-      const a = document.createElement('div'); a.className = 'book-author'; a.textContent = book.author || '';
-      const btn = document.createElement('button'); btn.className = 'read-btn'; btn.textContent = '📖 Read Book';
-      btn.addEventListener('click', (e) => { e.stopPropagation(); openBook(book.textUrl, book.title); });
+/* render book grid */
+function renderBookGrid(list=books){
+  booksGrid.innerHTML = '';
+  if (!list.length) { booksGrid.innerHTML = '<div class="empty-note">No books found.</div>'; return; }
+  list.forEach(b=>{
+    const card = document.createElement('div'); card.className='book-card';
+    const coverWrap = document.createElement('div'); coverWrap.className='cover-wrap';
+    if (b.cover){
+      const img = document.createElement('img'); img.src = b.cover;
+      img.alt = b.title;
+      img.onload = ()=>{/* ok */};
+      img.onerror = ()=>{ coverWrap.innerHTML = `<div class="cover-placeholder">${shortTitle(b.title)}</div>`; };
+      coverWrap.appendChild(img);
+    } else {
+      coverWrap.innerHTML = `<div class="cover-placeholder">${shortTitle(b.title)}</div>`;
+    }
 
-      card.appendChild(cover); card.appendChild(t); card.appendChild(a); card.appendChild(btn);
-      grid.appendChild(card);
-    });
-  }
+    const title = document.createElement('div'); title.className='book-title'; title.textContent = b.title;
+    const author = document.createElement('div'); author.className='book-author'; author.textContent = b.author || '';
+    const row = document.createElement('div'); row.className='card-row';
 
-  function populateGenres() {
-    const sel = document.getElementById('genreFilter');
-    sel.innerHTML = '<option value="">All Genres</option>';
-    const uniq = [...new Set(books.map(b => b.genre).filter(Boolean))].sort();
-    uniq.forEach(g => { const o = document.createElement('option'); o.value = g; o.textContent = g; sel.appendChild(o); });
-  }
+    const readBtn = document.createElement('button'); readBtn.className='btn'; readBtn.textContent='📖 Read';
+    readBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openBook(b); });
 
-  document.getElementById('searchInput').addEventListener('input', () => {
-    const q = document.getElementById('searchInput').value.trim().toLowerCase();
-    const filtered = books.filter(b => (b.title + ' ' + (b.author||'') + ' ' + (b.genre||'')).toLowerCase().includes(q));
-    displayBooks(filtered);
+    const rlBtn = document.createElement('button'); rlBtn.className='small-btn'; rlBtn.textContent = isInReadLater(b.textUrl) ? 'Remove Read Later' : 'Read Later';
+    rlBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleReadLater(b); rlBtn.textContent = isInReadLater(b.textUrl) ? 'Remove Read Later' : 'Read Later'; });
+
+    row.appendChild(readBtn); row.appendChild(rlBtn);
+    card.appendChild(coverWrap); card.appendChild(title); card.appendChild(author); card.appendChild(row);
+    // Clicking card reads
+    card.addEventListener('click', ()=> openBook(b));
+    booksGrid.appendChild(card);
   });
+}
 
-  document.getElementById('genreFilter').addEventListener('change', () => {
-    const g = document.getElementById('genreFilter').value;
-    const filtered = g ? books.filter(b => b.genre === g) : books;
-    displayBooks(filtered);
+/* helper short title */
+function shortTitle(t){
+  if (!t) return 'No title';
+  return t.split(' ').slice(0,3).join(' ');
+}
+
+/* Genre filter / search */
+function populateGenreFilter(){
+  const sel = document.getElementById('genreFilter'); sel.innerHTML = '<option value="">All Genres</option>';
+  const uniq = [...new Set(books.map(b=>b.genre).filter(Boolean))].sort();
+  uniq.forEach(g=>{ const o=document.createElement('option'); o.value=g; o.textContent=g; sel.appendChild(o); });
+}
+document.getElementById('searchInput').addEventListener('input', ()=>{
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const genre = document.getElementById('genreFilter').value;
+  const filtered = books.filter(b => ((b.title + ' ' + (b.author||'') + ' ' + (b.genre||'')).toLowerCase().includes(q) && (!genre || b.genre===genre)));
+  renderBookGrid(filtered);
+});
+document.getElementById('genreFilter').addEventListener('change', ()=> document.getElementById('searchInput').dispatchEvent(new Event('input')));
+
+/* READ LATER (localStorage) */
+function getReadLater(){ try{ return JSON.parse(localStorage.getItem('gutenberg:readlater')||'[]') }catch(e){ return [] } }
+function saveReadLater(list){ localStorage.setItem('gutenberg:readlater', JSON.stringify(list)); }
+function isInReadLater(url){ if(!url) return false; return getReadLater().some(i=>i.textUrl===url); }
+function toggleReadLater(book){
+  const list = getReadLater();
+  const idx = list.findIndex(b=>b.textUrl===book.textUrl);
+  if (idx === -1) { list.unshift({title:book.title, author:book.author, textUrl:book.textUrl, cover:book.cover}); saveReadLater(list); showToast('Added to Read Later'); }
+  else { list.splice(idx,1); saveReadLater(list); showToast('Removed from Read Later'); }
+  renderReadLaterList();
+}
+
+/* render Read Later list */
+function renderReadLaterList(){
+  const wrap = document.getElementById('readLaterList');
+  const empty = document.getElementById('readLaterEmpty');
+  const list = getReadLater();
+  wrap.innerHTML=''; empty.style.display='none';
+  if (!list.length){ empty.style.display='block'; return; }
+  list.forEach(b=>{
+    const card=document.createElement('div'); card.className='book-card';
+    const coverWrap = document.createElement('div'); coverWrap.className='cover-wrap';
+    if (b.cover){ const img=document.createElement('img'); img.src=b.cover; img.onerror=()=>{coverWrap.innerHTML=`<div class="cover-placeholder">${shortTitle(b.title)}</div>`}; coverWrap.appendChild(img); } else coverWrap.innerHTML=`<div class="cover-placeholder">${shortTitle(b.title)}</div>`;
+    const title=document.createElement('div'); title.className='book-title'; title.textContent=b.title;
+    const author=document.createElement('div'); author.className='book-author'; author.textContent=b.author||'';
+    const row=document.createElement('div'); row.className='card-row';
+    const openBtn=document.createElement('button'); openBtn.className='btn'; openBtn.textContent='Open'; openBtn.addEventListener('click', ()=> openBook(b));
+    const removeBtn=document.createElement('button'); removeBtn.className='small-btn'; removeBtn.textContent='Remove'; removeBtn.addEventListener('click', ()=>{ toggleReadLater(b); renderReadLaterList(); });
+    row.appendChild(openBtn); row.appendChild(removeBtn);
+    card.appendChild(coverWrap); card.appendChild(title); card.appendChild(author); card.appendChild(row);
+    wrap.appendChild(card);
   });
+}
 
-  // --------------- OPEN BOOK -> fetch via worker, clean, paginate ---------------
-  async function openBook(textUrl, title) {
-    if (!textUrl) { alert('No text URL for this book'); return; }
-    currentBook = { title, textUrl };
-    readerTitle.textContent = title || 'Untitled';
-    showReader();
-
-    try {
-      const proxyFetchUrl = `${PROXY_URL}?url=${encodeURIComponent(textUrl)}&key=${encodeURIComponent(PROXY_KEY)}`;
-      const res = await fetch(proxyFetchUrl);
-      if (!res.ok) {
-        const errText = await res.text().catch(()=>res.statusText||'');
-        throw new Error(`Proxy fetch failed: ${res.status} ${errText}`);
-      }
-      const raw = await res.text();
-      const plain = extractPlainText(raw); // returns cleaned plain text
-      paginateFromPlain(plain);
-      currentPage = loadLastPageIndex(currentBook.textUrl) || 0;
-      renderPage(currentPage);
-      saveLastPageIndex(currentBook.textUrl, currentPage);
-    } catch (err) {
-      console.error('openBook error', err);
-      pageText.innerHTML = `<div style="padding:18px;color:#c0392b">Failed to load book: ${escapeHtml(err.message || err)}</div>
-        <div style="margin-top:12px"><button onclick="window.open('${escapeForWindow(currentBook.textUrl)}','_blank')">Open original</button></div>`;
+/* CONTINUE READING: scan localStorage keys for last page markers */
+function getContinueList(){
+  const list=[];
+  for (let i=0;i<localStorage.length;i++){
+    const key = localStorage.key(i);
+    if (!key) continue;
+    if (key.startsWith('gutenberg:lastpage:')) {
+      const url = key.replace('gutenberg:lastpage:','');
+      const idx = parseInt(localStorage.getItem(key),10) || 0;
+      // find book meta from books[] or readLater
+      let meta = books.find(b=>b.textUrl===url) || getReadLater().find(b=>b.textUrl===url) || null;
+      if (meta) list.push({title:meta.title, author:meta.author, textUrl:url, lastPage:idx});
+      else list.push({title:url.split('/').slice(-1)[0], author:'', textUrl:url, lastPage:idx});
     }
   }
+  // sort by most recently updated? can't easily get timestamp; keep insertion order
+  return list;
+}
 
-  // show/hide reader
-  function showReader() {
-    reader.style.display = 'block';
-    reader.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function hideReader() {
-    reader.style.display = 'none';
-    reader.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
+function renderContinueList(){
+  const wrap = document.getElementById('continueList');
+  const empty = document.getElementById('continueEmpty');
+  const list = getContinueList();
+  wrap.innerHTML=''; empty.style.display='none';
+  if (!list.length){ empty.style.display='block'; return; }
+  list.forEach(item=>{
+    const card=document.createElement('div'); card.className='book-card';
+    const title=document.createElement('div'); title.className='book-title'; title.textContent=item.title;
+    const author=document.createElement('div'); author.className='book-author'; author.textContent=item.author||'';
+    const btnRow=document.createElement('div'); btnRow.className='card-row';
+    const openBtn=document.createElement('button'); openBtn.className='btn'; openBtn.textContent='Continue'; openBtn.addEventListener('click', ()=> openBook({title:item.title,textUrl:item.textUrl}));
+    const removeBtn=document.createElement('button'); removeBtn.className='small-btn'; removeBtn.textContent='Remove'; removeBtn.addEventListener('click', ()=> { localStorage.removeItem('gutenberg:lastpage:' + item.textUrl); renderContinueList(); });
+    btnRow.appendChild(openBtn); btnRow.appendChild(removeBtn);
+    card.appendChild(title); card.appendChild(author); card.appendChild(btnRow);
+    wrap.appendChild(card);
+  });
+}
 
-  // extract plain text after headers / before footers
-  function extractPlainText(raw) {
-    let content = (raw || '').replace(/\r\n/g, '\n');
+/* Open book: fetch via worker, clean, paginate and render at saved page (if any) */
+async function openBook(book){
+  // book may be object or textUrl string
+  const b = (typeof book === 'string') ? books.find(x=>x.textUrl===book) : book;
+  if (!b || !b.textUrl) { alert('No text URL'); return; }
+  currentBook = { title: b.title, textUrl: b.textUrl, author: b.author, cover: b.cover };
 
-    // find common START marker location (case-insensitive)
-    const U = content.toUpperCase();
-    const startMarkers = [
-      '*** START OF THE PROJECT GUTENBERG EBOOK',
-      '*** START OF THIS PROJECT GUTENBERG EBOOK',
-      '***START OF THE PROJECT GUTENBERG EBOOK',
-      '*** START'
-    ];
+  readerTitle.textContent = currentBook.title || 'Untitled';
+  showReader();
 
-    let sIdx = -1;
-    for (const m of startMarkers) {
-      sIdx = U.indexOf(m);
-      if (sIdx !== -1) {
-        // move past the marker line and the immediate blank line
-        const after = content.indexOf('\n\n', sIdx);
-        if (after !== -1) { content = content.substring(after + 2); } else { content = content.substring(sIdx + m.length); }
-        break;
-      }
+  try {
+    const resp = await fetch(`${PROXY_URL}?url=${encodeURIComponent(currentBook.textUrl)}&key=${encodeURIComponent(PROXY_KEY)}`);
+    if (!resp.ok) {
+      const body = await resp.text().catch(()=>resp.statusText||'');
+      throw new Error('Proxy fetch failed: ' + resp.status + ' ' + body);
     }
+    const raw = await resp.text();
+    const plain = extractPlainText(raw);
+    paginateText(plain, wordsPerPage);
+    // restore last page index
+    const saved = parseInt(localStorage.getItem('gutenberg:lastpage:' + currentBook.textUrl) || '0', 10);
+    currentPage = Math.max(0, Math.min(saved, pages.length - 1));
+    renderPage(currentPage);
+    // add to "continue" automatically (localStorage lastpage will be set by renderPage)
+    renderContinueList();
+  } catch (err) {
+    console.error('openBook error', err);
+    pageContent.innerHTML = `<div style="padding:18px;color:#c0392b">Failed to load book: ${escapeHtml(err.message || err)}</div>`;
+  }
+}
 
-    // remove common Gutenberg header blocks if still present
-    content = content.replace(/The Project Gutenberg eBook of [\s\S]*?\n\n/gi, '');
-    content = content.replace(/This ebook is for the use of anyone anywhere[\s\S]*?www\.gutenberg\.org\./gi, '');
-    content = content.replace(/Title:.*\nAuthor:.*\nRelease date:.*\n/gi, '');
+function showReader(){ readerEl.style.display='block'; readerEl.focus(); document.body.style.overflow='hidden'; }
+function hideReader(){ readerEl.style.display='none'; document.body.style.overflow=''; renderContinueList(); renderReadLaterList(); }
 
-    // strip footer markers
-    const footerMarkers = ['*** END OF THE PROJECT GUTENBERG EBOOK', '*** END OF THIS PROJECT GUTENBERG EBOOK', 'END OF THE PROJECT GUTENBERG'];
-    for (const fm of footerMarkers) {
-      const f = content.toUpperCase().indexOf(fm);
-      if (f !== -1) { content = content.substring(0, f); break; }
-    }
-
-    // normalize spacing and trim
-    content = content.replace(/\n{3,}/g, '\n\n').trim();
-
-    return content;
+/* clean Gutenberg headers/footers and return plain text (paragraphs separated by double newline) */
+function extractPlainText(raw){
+  let s = (raw || '').replace(/\r\n/g, '\n');
+  const U = s.toUpperCase();
+  const startMarkers = ['*** START OF THE PROJECT GUTENBERG EBOOK','*** START OF THIS PROJECT GUTENBERG EBOOK','***START OF THE PROJECT GUTENBERG EBOOK','*** START'];
+  let startIdx = -1;
+  for (const m of startMarkers){ const i = U.indexOf(m); if (i !== -1){ startIdx = i; break; } }
+  if (startIdx !== -1){
+    // find next double newline after marker
+    const after = s.indexOf('\n\n', startIdx);
+    if (after !== -1) s = s.substring(after + 2);
+    else s = s.substring(startIdx);
+  } else {
+    // remove typical metadata top blocks heuristically
+    s = s.replace(/Title:.*\nAuthor:.*\nRelease date:.*\n/gi,'');
+    s = s.replace(/The Project Gutenberg eBook of [\s\S]*?\n\n/gi, '');
   }
 
-  // paginate by words while keeping paragraph boundaries
-  function paginateFromPlain(plainText) {
-    // split paragraphs by double newlines
-    const paragraphs = plainText.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+  // Remove footer/common license
+  const footerMarkers = ['*** END OF THE PROJECT GUTENBERG EBOOK','*** END OF THIS PROJECT GUTENBERG EBOOK','END OF PROJECT GUTENBERG','END OF THE PROJECT GUTENBERG'];
+  let endIdx = -1;
+  const SU = s.toUpperCase();
+  for (const fm of footerMarkers){ const i = SU.indexOf(fm); if (i !== -1){ endIdx = i; break; } }
+  if (endIdx !== -1) s = s.substring(0, endIdx);
 
-    const pagesArr = [];
-    let currentPageParas = [];
-    let currentCount = 0;
+  // strip extra license paragraph remnants
+  s = s.replace(/This ebook is for the use of anyone anywhere[\s\S]*?www\.gutenberg\.org\./gi, '');
+  // normalize repeated blank lines
+  s = s.replace(/\n{3,}/g, '\n\n').trim();
 
-    for (let para of paragraphs) {
-      // convert internal newlines to spaces (preserve single paragraph)
-      let words = para.split(/\s+/).filter(Boolean);
-      if (currentCount + words.length <= WORDS_PER_PAGE) {
-        currentPageParas.push(para);
-        currentCount += words.length;
-      } else {
-        // if paragraph alone exceeds page size, need to split it
-        if (words.length > WORDS_PER_PAGE) {
-          // fill remaining space on current page
-          let idx = 0;
-          if (currentCount > 0) {
-            const take = WORDS_PER_PAGE - currentCount;
-            const chunk = words.slice(0, take).join(' ');
-            currentPageParas.push(chunk);
-            pagesArr.push(renderParagraphsToHtml(currentPageParas));
-            currentPageParas = [];
-            currentCount = 0;
-            idx = take;
-          }
-          // now split remaining words into full pages
-          while (idx < words.length) {
-            const chunkWords = words.slice(idx, idx + WORDS_PER_PAGE);
-            pagesArr.push(renderParagraphsToHtml([chunkWords.join(' ')]));
-            idx += WORDS_PER_PAGE;
-          }
-        } else {
-          // finalize current page and start new one with this paragraph
-          if (currentPageParas.length) {
-            pagesArr.push(renderParagraphsToHtml(currentPageParas));
-          }
-          currentPageParas = [para];
-          currentCount = words.length;
+  return s;
+}
+
+/* PAGINATION: paragraph-aware and rebalancing to avoid tiny final page */
+function paginateText(plain, wordsPerPageLocal){
+  const paragraphs = plain.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+
+  // Build pages greedily by words per page but keep paragraphs intact; split large paragraphs when necessary
+  const pagesArr = [];
+  let current = [];
+  let currentWords = 0;
+
+  for (let para of paragraphs){
+    const words = para.split(/\s+/).filter(Boolean);
+    if (words.length + currentWords <= wordsPerPageLocal){
+      current.push(para);
+      currentWords += words.length;
+    } else {
+      // paragraph doesn't fit entirely
+      if (words.length > wordsPerPageLocal){
+        // split paragraph into word-chunks
+        let idx = 0;
+        if (currentWords > 0){
+          // finish current page with partial of this paragraph
+          const take = wordsPerPageLocal - currentWords;
+          current.push(words.slice(0, take).join(' '));
+          pagesArr.push(current.slice());
+          current = [];
+          idx = take;
         }
+        // now fill full pages from remaining words
+        while (idx < words.length){
+          const chunk = words.slice(idx, idx + wordsPerPageLocal);
+          pagesArr.push([chunk.join(' ')]);
+          idx += wordsPerPageLocal;
+        }
+      } else {
+        // finish current page, push and start new with this paragraph
+        if (current.length) pagesArr.push(current.slice());
+        current = [para];
+        currentWords = words.length;
       }
     }
+  }
+  if (current.length) pagesArr.push(current.slice());
 
-    // push the last page if any
-    if (currentPageParas.length) {
-      pagesArr.push(renderParagraphsToHtml(currentPageParas));
-    }
-
-    pages = pagesArr;
-    // apply default font size
-    document.documentElement.style.setProperty('--reader-font-size', fontSize + 'px');
+  // Now ensure last page isn't too small; if last page length < MIN_BALANCE_RATIO*wordsPerPage, rebalance with previous page
+  function pageWordCount(pageParas){
+    return pageParas.reduce((s,p)=>s + p.split(/\s+/).filter(Boolean).length, 0);
   }
 
-  // turn array of paragraphs into HTML string (escape)
-  function renderParagraphsToHtml(paras) {
-    return paras.map(p => `<p>${escapeHtml(p.replace(/\n/g,' '))}</p>`).join('\n');
-  }
-
-  // render a specific page (no scrolling horizontally)
-  function renderPage(index) {
-    if (!pages || pages.length === 0) {
-      pageText.innerHTML = '<div style="padding:18px;color:#666">No readable pages available.</div>';
-      pageIndicator.textContent = 'Page 0 / 0';
-      return;
-    }
-    currentPage = Math.max(0, Math.min(index, pages.length - 1));
-    pageText.innerHTML = pages[currentPage];
-    pageIndicator.textContent = `Page ${currentPage + 1} / ${pages.length}`;
-    // save resume point
-    saveLastPageIndex(currentBook.textUrl, currentPage);
-    // focus for keyboard navigation
-    pageText.focus();
-  }
-
-  function nextPage() { if (currentPage < pages.length - 1) renderPage(currentPage + 1); }
-  function prevPage() { if (currentPage > 0) renderPage(currentPage - 1); }
-  function firstPage() { renderPage(0); }
-  function lastPage() { renderPage(pages.length - 1); }
-
-  // adjust font size (smaller default to pack words)
-  document.getElementById('increaseFS').addEventListener('click', () => {
-    fontSize = Math.min(24, fontSize + 1);
-    document.documentElement.style.setProperty('--reader-font-size', fontSize + 'px');
-    pageText.style.fontSize = fontSize + 'px';
-  });
-  document.getElementById('decreaseFS').addEventListener('click', () => {
-    fontSize = Math.max(10, fontSize - 1);
-    document.documentElement.style.setProperty('--reader-font-size', fontSize + 'px');
-    pageText.style.fontSize = fontSize + 'px';
-  });
-
-  // navigation buttons
-  document.getElementById('nextBtn').addEventListener('click', nextPage);
-  document.getElementById('prevBtn').addEventListener('click', prevPage);
-  document.getElementById('firstPageBtn').addEventListener('click', firstPage);
-  document.getElementById('lastPageBtn').addEventListener('click', lastPage);
-  document.getElementById('closeReaderBtn').addEventListener('click', () => { hideReader(); });
-
-  // open original
-  document.getElementById('openOriginalBtn').addEventListener('click', () => {
-    if (currentBook && currentBook.textUrl) window.open(currentBook.textUrl, '_blank');
-  });
-
-  // keyboard navigation
-  window.addEventListener('keydown', (e) => {
-    if (reader.style.display !== 'block') return;
-    if (e.key === 'ArrowRight' || e.key === 'PageDown') { nextPage(); e.preventDefault(); }
-    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { prevPage(); e.preventDefault(); }
-    if (e.key === 'Home') { firstPage(); }
-    if (e.key === 'End') { lastPage(); }
-    if (e.key === 'Escape') { hideReader(); }
-  });
-
-  // touch/swipe navigation
-  let touchStartX = 0;
-  let touchStartY = 0;
-  const swipeThreshold = 40; // px
-
-  function onTouchStart(e) {
-    const t = e.touches ? e.touches[0] : e;
-    touchStartX = t.clientX;
-    touchStartY = t.clientY;
-  }
-  function onTouchEnd(e) {
-    const t = e.changedTouches ? e.changedTouches[0] : e;
-    const dx = t.clientX - touchStartX;
-    const dy = t.clientY - touchStartY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > swipeThreshold) {
-      if (dx < 0) nextPage(); else prevPage();
+  while (pagesArr.length >= 2){
+    const last = pagesArr[pagesArr.length - 1];
+    const prev = pagesArr[pagesArr.length - 2];
+    const lastCount = pageWordCount(last);
+    if (lastCount >= Math.floor(wordsPerPageLocal * MIN_BALANCE_RATIO)) break; // acceptable
+    // need to rebalance: merge prev+last and split into two balanced pages
+    const combined = prev.concat(last);
+    const combinedWords = combined.join(' ').split(/\s+/).filter(Boolean);
+    if (combinedWords.length <= wordsPerPageLocal) {
+      // if combined fits in one page, merge into one and we're done
+      pagesArr.splice(pagesArr.length - 2, 2, [combinedWords.join(' ')]);
+      break;
+    } else {
+      // split combined into two near-equal pages
+      const half = Math.ceil(combinedWords.length / 2);
+      const firstChunk = combinedWords.slice(0, half).join(' ');
+      const secondChunk = combinedWords.slice(half).join(' ');
+      pagesArr.splice(pagesArr.length - 2, 2, [firstChunk], [secondChunk]);
+      // loop to check again (maybe second is too small, but loop will handle)
     }
   }
 
-  document.getElementById('navLeft').addEventListener('touchstart', onTouchStart);
-  document.getElementById('navLeft').addEventListener('touchend', onTouchEnd);
-  document.getElementById('navRight').addEventListener('touchstart', onTouchStart);
-  document.getElementById('navRight').addEventListener('touchend', onTouchEnd);
+  // Convert page arrays of paragraphs into HTML strings
+  pages = pagesArr.map(pageParas => pageParas.map(p => `<p>${escapeHtml(p)}</p>`).join('\n'));
+  // ensure non-empty
+  if (!pages.length) pages = ['<p>No content extracted.</p>'];
+}
 
-  // allow tapping left/right on big areas too (desktop)
-  document.getElementById('navLeft').addEventListener('click', prevPage);
-  document.getElementById('navRight').addEventListener('click', nextPage);
+/* render a page (no horizontal scroll) */
+function renderPage(idx){
+  if (!pages || !pages.length) { pageContent.innerHTML = '<div class="empty-note">No pages</div>'; pageIndicator.textContent = 'Page 0 / 0'; return; }
+  currentPage = Math.max(0, Math.min(idx, pages.length - 1));
+  // set font size
+  pageContent.style.fontSize = fontSize + 'px';
+  pageContent.innerHTML = pages[currentPage];
+  pageIndicator.textContent = `Page ${currentPage + 1} / ${pages.length}`;
+  // save last page
+  try { localStorage.setItem('gutenberg:lastpage:' + currentBook.textUrl, String(currentPage)); } catch(e){}
+  // ensure continue list refresh
+  renderContinueList();
+}
 
-  // save & restore last page per book using localStorage
-  function saveLastPageIndex(bookUrl, idx) {
-    try {
-      if (!bookUrl) return;
-      const key = `gutenberg:lastpage:${bookUrl}`;
-      localStorage.setItem(key, String(idx));
-    } catch (e) { /* ignore storage errors */ }
+/* navigation handlers */
+document.getElementById('nextBtn').addEventListener('click', ()=> renderPage(currentPage+1));
+document.getElementById('prevBtn').addEventListener('click', ()=> renderPage(currentPage-1));
+document.getElementById('firstBtn').addEventListener('click', ()=> renderPage(0));
+document.getElementById('lastBtn').addEventListener('click', ()=> renderPage(pages.length-1));
+document.getElementById('closeReader').addEventListener('click', ()=> hideReader());
+document.getElementById('openOriginal').addEventListener('click', ()=> { if(currentBook && currentBook.textUrl) window.open(currentBook.textUrl,'_blank'); });
+
+/* increase/decrease font size (and optionally recompute pages if you want - but we keep word-per-page const) */
+document.getElementById('increaseFS').addEventListener('click', ()=>{
+  fontSize = Math.min(20, fontSize + 1);
+  pageContent.style.fontSize = fontSize + 'px';
+});
+document.getElementById('decreaseFS').addEventListener('click', ()=>{
+  fontSize = Math.max(9, fontSize - 1);
+  pageContent.style.fontSize = fontSize + 'px';
+});
+
+/* keyboard navigation */
+window.addEventListener('keydown', (e)=>{
+  if (readerEl.style.display === 'block'){
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { renderPage(currentPage + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { renderPage(currentPage - 1); e.preventDefault(); }
+    if (e.key === 'Escape') hideReader();
   }
-  function loadLastPageIndex(bookUrl) {
-    try {
-      if (!bookUrl) return 0;
-      const key = `gutenberg:lastpage:${bookUrl}`;
-      const v = localStorage.getItem(key); return v ? parseInt(v,10) : 0;
-    } catch (e) { return 0; }
-  }
+});
 
-  // helpers
-  function escapeHtml(s) { return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function escapeForWindow(u) { return u ? u.replace(/'/g,"\\'") : ''; }
+/* swipe/tap navigation areas */
+let tx=0, ty=0;
+function touchStart(e){ const t = e.touches ? e.touches[0] : e; tx = t.clientX; ty = t.clientY; }
+function touchEnd(e){ const t = e.changedTouches ? e.changedTouches[0] : e; const dx = t.clientX - tx; const dy = t.clientY - ty; if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30){ if (dx < 0) renderPage(currentPage+1); else renderPage(currentPage-1); } }
+document.getElementById('navLeft').addEventListener('touchstart', touchStart); document.getElementById('navRight').addEventListener('touchstart', touchStart);
+document.getElementById('navLeft').addEventListener('touchend', touchEnd); document.getElementById('navRight').addEventListener('touchend', touchEnd);
+document.getElementById('navLeft').addEventListener('click', ()=> renderPage(currentPage-1)); document.getElementById('navRight').addEventListener('click', ()=> renderPage(currentPage+1));
 
-  // init
-  window.addEventListener('load', loadBooks);
-  </script>
+/* CONTINUE & READ LATER helpers - after page change, these lists update */
+function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function paginateWordsPerPage(n){ wordsPerPage = n; }
+
+/* small toast */
+function showToast(text){
+  const t = document.createElement('div'); t.textContent = text;
+  t.style.position='fixed'; t.style.bottom='20px'; t.style.left='50%'; t.style.transform='translateX(-50%)'; t.style.background='rgba(0,0,0,0.8)'; t.style.color='#fff'; t.style.padding='8px 12px'; t.style.borderRadius='8px'; t.style.zIndex=99999;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),1400);
+}
+
+/* utility for opening encoded urls safely */
+function escapeForWindow(u){ return u?u.replace(/'/g,"\\'") : ''; }
+
+/* render both lists initially */
+renderContinueList();
+renderReadLaterList();
+
+</script>
 </body>
 </html>
