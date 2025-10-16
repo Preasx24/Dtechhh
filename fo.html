@@ -417,19 +417,43 @@
   }
 
   /* Section-specific styling */
+  #homeSection {
+    background: linear-gradient(to bottom, #f9f5f1 0%, #f0e6d8 100%);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+
   #homeSection .section-title {
     color: #8b6b4c;
     border-bottom: 2px solid #d4c4b5;
+    padding-bottom: 10px;
+  }
+
+  #continueSection {
+    background: linear-gradient(to bottom, #f1f9f1 0%, #e0f0e0 100%);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
   }
 
   #continueSection .section-title {
     color: #5a7d5a;
     border-bottom: 2px solid #b8d4b8;
+    padding-bottom: 10px;
+  }
+
+  #readLaterSection {
+    background: linear-gradient(to bottom, #f9f1f1 0%, #f0e0e0 100%);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
   }
 
   #readLaterSection .section-title {
     color: #7d5a5a;
     border-bottom: 2px solid #d4b8b8;
+    padding-bottom: 10px;
   }
 
   /* small screens */
@@ -490,7 +514,6 @@
   .section-title{
     font-size:24px;
     margin:0 0 20px;
-    padding-bottom:10px;
   }
 
   /* Toast notification */
@@ -581,9 +604,9 @@
 /* CONFIG - EASILY EDITABLE VALUES */
 const PROXY_URL = "https://silent-brook-9ad3.dtech2j.workers.dev/"; // your Worker
 const PROXY_KEY = "dtech_secret";
-const WORDS_PER_PAGE_DEFAULT = 300;         // Change this value to adjust words per page
+const WORDS_PER_PAGE_DEFAULT = 500;         // Change this value to adjust words per page
 const MIN_BALANCE_RATIO = 0.40;             // minimum fraction for last page before rebalancing
-const FONT_SIZE_DEFAULT = 7;                // Change this value to adjust font size
+const FONT_SIZE_DEFAULT = 9;                // Change this value to adjust font size
 
 /* STATE */
 let books = [];
@@ -592,6 +615,7 @@ let currentPage = 0;
 let currentBook = null;    // {title, textUrl, cover, author}
 let wordsPerPage = WORDS_PER_PAGE_DEFAULT;
 let fontSize = FONT_SIZE_DEFAULT;
+let pageIndicatorTimeout;
 
 /* UI refs */
 const booksGrid = document.getElementById('booksGrid');
