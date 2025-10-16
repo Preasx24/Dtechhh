@@ -15,7 +15,7 @@
     --background:#f9f5f1;
     --card-bg:#ffffff;
     --book-font: "Georgia","Times New Roman", serif;
-    --reader-font-size: 11px; /* Reduced from 14px */
+    --reader-font-size: 9px; /* Reduced font size */
     --page-words: 500;
   }
 
@@ -416,6 +416,22 @@
     right:20px;
   }
 
+  /* Section-specific styling */
+  #homeSection .section-title {
+    color: #8b6b4c;
+    border-bottom: 2px solid #d4c4b5;
+  }
+
+  #continueSection .section-title {
+    color: #5a7d5a;
+    border-bottom: 2px solid #b8d4b8;
+  }
+
+  #readLaterSection .section-title {
+    color: #7d5a5a;
+    border-bottom: 2px solid #d4b8b8;
+  }
+
   /* small screens */
   @media (max-width:768px){
     .page-container{
@@ -473,10 +489,8 @@
 
   .section-title{
     font-size:24px;
-    color:var(--accent-dark);
     margin:0 0 20px;
     padding-bottom:10px;
-    border-bottom:1px solid var(--accent-light);
   }
 
   /* Toast notification */
@@ -564,11 +578,12 @@
 </div>
 
 <script>
-/* CONFIG */
+/* CONFIG - EASILY EDITABLE VALUES */
 const PROXY_URL = "https://silent-brook-9ad3.dtech2j.workers.dev/"; // your Worker
 const PROXY_KEY = "dtech_secret";
-const WORDS_PER_PAGE_DEFAULT = 500;         // user requested default
+const WORDS_PER_PAGE_DEFAULT = 500;         // Change this value to adjust words per page
 const MIN_BALANCE_RATIO = 0.40;             // minimum fraction for last page before rebalancing
+const FONT_SIZE_DEFAULT = 9;                // Change this value to adjust font size
 
 /* STATE */
 let books = [];
@@ -576,8 +591,7 @@ let pages = [];            // current pages (HTML strings)
 let currentPage = 0;
 let currentBook = null;    // {title, textUrl, cover, author}
 let wordsPerPage = WORDS_PER_PAGE_DEFAULT;
-let fontSize = 11; // Reduced font size as requested
-let pageIndicatorTimeout;
+let fontSize = FONT_SIZE_DEFAULT;
 
 /* UI refs */
 const booksGrid = document.getElementById('booksGrid');
@@ -647,7 +661,11 @@ function parseDataTxt(text){
     if (!currentBook) continue;
     if (line.includes('👤 Author:')) currentBook.author = line.split('👤 Author:')[1].trim();
     else if (line.includes('📝 Text URL:')) currentBook.textUrl = line.split('📝 Text URL:')[1].trim();
-    else if (line.includes('🖼️  Cover:') || line.includes('🖼️ Cover:')) currentBook.cover = (line.split('🖼️')[1]||'').replace(/^Cover:\s*/i,'').trim();
+    else if (line.includes('🖼️  Cover:') || line.includes('🖼️ Cover:')) {
+      // Extract cover URL correctly
+      const coverMatch = line.match(/🖼️\s*Cover:\s*(.+)/i);
+      if (coverMatch) currentBook.cover = coverMatch[1].trim();
+    }
     else if (/^-{6,}/.test(line)){ parsed.push(currentBook); currentBook = null; }
   }
   if (currentBook) parsed.push(currentBook);
@@ -876,79 +894,69 @@ function extractPlainText(raw){
   return s;
 }
 
-/* PAGINATION: paragraph-aware and rebalancing to avoid tiny final page */
+/* PAGINATION: Improved algorithm to prevent cutting content */
 function paginateText(plain, wordsPerPageLocal){
   const paragraphs = plain.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
 
-  // Build pages greedily by words per page but keep paragraphs intact; split large paragraphs when necessary
+  // Build pages by preserving paragraph boundaries
   const pagesArr = [];
-  let current = [];
-  let currentWords = 0;
+  let currentPageText = '';
+  let currentWordCount = 0;
 
   for (let para of paragraphs){
     const words = para.split(/\s+/).filter(Boolean);
-    if (words.length + currentWords <= wordsPerPageLocal){
-      current.push(para);
-      currentWords += words.length;
-    } else {
-      // paragraph doesn't fit entirely
-      if (words.length > wordsPerPageLocal){
-        // split paragraph into word-chunks
-        let idx = 0;
-        if (currentWords > 0){
-          // finish current page with partial of this paragraph
-          const take = wordsPerPageLocal - currentWords;
-          current.push(words.slice(0, take).join(' '));
-          pagesArr.push(current.slice());
-          current = [];
-          idx = take;
-        }
-        // now fill full pages from remaining words
-        while (idx < words.length){
-          const chunk = words.slice(idx, idx + wordsPerPageLocal);
-          pagesArr.push([chunk.join(' ')]);
-          idx += wordsPerPageLocal;
+    const paraWordCount = words.length;
+    
+    // If adding this paragraph would exceed the limit
+    if (currentWordCount + paraWordCount > wordsPerPageLocal) {
+      // If current page has content, push it
+      if (currentPageText) {
+        pagesArr.push(currentPageText);
+        currentPageText = '';
+        currentWordCount = 0;
+      }
+      
+      // If paragraph is too long for a single page, split it
+      if (paraWordCount > wordsPerPageLocal) {
+        let remainingWords = paraWordCount;
+        let startIdx = 0;
+        
+        while (remainingWords > 0) {
+          const take = Math.min(remainingWords, wordsPerPageLocal);
+          const chunk = words.slice(startIdx, startIdx + take).join(' ');
+          pagesArr.push(chunk);
+          startIdx += take;
+          remainingWords -= take;
         }
       } else {
-        // finish current page, push and start new with this paragraph
-        if (current.length) pagesArr.push(current.slice());
-        current = [para];
-        currentWords = words.length;
+        // Paragraph fits in a new page
+        currentPageText = para;
+        currentWordCount = paraWordCount;
       }
-    }
-  }
-  if (current.length) pagesArr.push(current.slice());
-
-  // Now ensure last page isn't too small; if last page length < MIN_BALANCE_RATIO*wordsPerPage, rebalance with previous page
-  function pageWordCount(pageParas){
-    return pageParas.reduce((s,p)=>s + p.split(/\s+/).filter(Boolean).length, 0);
-  }
-
-  while (pagesArr.length >= 2){
-    const last = pagesArr[pagesArr.length - 1];
-    const prev = pagesArr[pagesArr.length - 2];
-    const lastCount = pageWordCount(last);
-    if (lastCount >= Math.floor(wordsPerPageLocal * MIN_BALANCE_RATIO)) break; // acceptable
-    // need to rebalance: merge prev+last and split into two balanced pages
-    const combined = prev.concat(last);
-    const combinedWords = combined.join(' ').split(/\s+/).filter(Boolean);
-    if (combinedWords.length <= wordsPerPageLocal) {
-      // if combined fits in one page, merge into one and we're done
-      pagesArr.splice(pagesArr.length - 2, 2, [combinedWords.join(' ')]);
-      break;
     } else {
-      // split combined into two near-equal pages
-      const half = Math.ceil(combinedWords.length / 2);
-      const firstChunk = combinedWords.slice(0, half).join(' ');
-      const secondChunk = combinedWords.slice(half).join(' ');
-      pagesArr.splice(pagesArr.length - 2, 2, [firstChunk], [secondChunk]);
-      // loop to check again (maybe second is too small, but loop will handle)
+      // Add paragraph to current page
+      if (currentPageText) {
+        currentPageText += '\n\n' + para;
+      } else {
+        currentPageText = para;
+      }
+      currentWordCount += paraWordCount;
     }
   }
+  
+  // Don't forget the last page
+  if (currentPageText) {
+    pagesArr.push(currentPageText);
+  }
 
-  // Convert page arrays of paragraphs into HTML strings
-  pages = pagesArr.map(pageParas => pageParas.map(p => `<p>${escapeHtml(p)}</p>`).join('\n'));
-  // ensure non-empty
+  // Convert pages to HTML
+  pages = pagesArr.map(pageText => {
+    // Split by paragraphs and wrap each in <p> tags
+    const pageParagraphs = pageText.split(/\n\s*\n/).filter(Boolean);
+    return pageParagraphs.map(p => `<p>${escapeHtml(p)}</p>`).join('');
+  });
+  
+  // Ensure non-empty
   if (!pages.length) pages = ['<p>No content extracted.</p>'];
 }
 
