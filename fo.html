@@ -1,413 +1,362 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Gutenberg Library Reader</title>
-    <style>
-        /* ... keep your existing CSS or add styles below ... */
-        .container { max-width: 1000px; margin: 20px auto; padding: 10px; }
-        .books-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: 14px; }
-        .book-card { background:#fff; border-radius:8px; padding:12px; box-shadow:0 2px 6px rgba(0,0,0,0.08); cursor:pointer; display:flex; flex-direction:column; gap:8px; }
-        .book-cover { height:160px; border-radius:6px; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; font-weight:600; color:#333; background:#eee; padding:10px; text-align:center; }
-        .reader-overlay { display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); z-index:9999; }
-        .reader-container { width:90%; max-width:920px; height:85%; background:#fff; border-radius:10px; overflow:auto; display:flex; flex-direction:column; }
-        .reader-header { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid #eee; }
-        .reader-content { padding:16px; overflow:auto; flex:1; }
-        .loading { padding:20px; color:#666; }
-        .error { color: #c0392b; padding:12px; }
-        .read-btn { margin-top:auto; padding:8px 10px; border:none; border-radius:6px; background:#3498db; color:#fff; cursor:pointer; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gutenberg Library Reader</title>
+  <style>
+    /* Minimal styles kept for readability */
+    body { font-family: system-ui, Arial, sans-serif; background:#f5f7fa; color:#222; margin:0; padding:20px; }
+    .container { max-width:1100px; margin:0 auto; }
+    header h1 { margin:0 0 6px 0; }
+    .controls { display:flex; gap:12px; margin:10px 0 18px; align-items:center; }
+    #searchInput { padding:8px 10px; width:320px; border-radius:6px; border:1px solid #ddd; }
+    #genreFilter { padding:8px; border-radius:6px; border:1px solid #ddd; }
+    .stats { margin-bottom:12px; color:#555; }
+    .books-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
+    .book-card { background:#fff; border-radius:8px; padding:12px; box-shadow:0 2px 8px rgba(0,0,0,.06); display:flex; flex-direction:column; gap:8px; min-height:220px; cursor:pointer; }
+    .book-cover { height:140px; border-radius:6px; background:#eee; display:flex; align-items:center; justify-content:center; font-weight:600; text-align:center; padding:10px; background-size:cover; background-position:center; color:#222; }
+    .book-title { font-weight:700; font-size:15px; }
+    .book-author { color:#666; font-size:13px; }
+    .book-meta { color:#666; font-size:12px; margin-top:6px; }
+    .read-btn { margin-top:auto; border:none; background:#2d9cdb; color:#fff; padding:8px 10px; border-radius:6px; cursor:pointer; }
+    .reader-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); align-items:center; justify-content:center; z-index:999; }
+    .reader-container { width:92%; max-width:960px; height:85%; background:#fff; border-radius:10px; overflow:auto; display:flex; flex-direction:column; }
+    .reader-header { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid #eee; }
+    .reader-content { padding:16px; overflow:auto; flex:1; }
+    .loading { padding:18px; color:#666; }
+    .error { color:#c0392b; padding:12px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📚 Gutenberg Library</h1>
-            <div class="subtitle">Explore thousands of free classic books</div>
-        </header>
+  <div class="container">
+    <header>
+      <h1>📚 Gutenberg Library</h1>
+      <div class="subtitle">Explore thousands of free classic books</div>
+    </header>
 
-        <div class="controls">
-            <div class="search-filter">
-                <input type="text" id="searchInput" placeholder="Search books by title or author...">
-                <select id="genreFilter">
-                    <option value="">All Genres</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="stats" id="stats">Loading books...</div>
-
-        <div class="books-grid" id="booksGrid">
-            <div class="loading">Loading books from data.txt...</div>
-        </div>
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Search books by title or author...">
+      <select id="genreFilter">
+        <option value="">All Genres</option>
+      </select>
     </div>
 
-    <!-- Book Reader -->
-    <div class="reader-overlay" id="readerOverlay">
-        <div class="reader-container">
-            <div class="reader-header">
-                <div class="reader-title" id="readerBookTitle">Loading...</div>
-                <div class="reader-controls">
-                    <button id="decreaseFS">A-</button>
-                    <button id="increaseFS">A+</button>
-                    <button id="closeReaderBtn">✕ Close</button>
-                </div>
-            </div>
-            <div class="reader-content" id="readerContent">
-                <div class="loading">Loading book content...</div>
-            </div>
-        </div>
+    <div class="stats" id="stats">Loading books...</div>
+
+    <div class="books-grid" id="booksGrid">
+      <div class="loading">Loading books from data.txt...</div>
     </div>
+  </div>
 
-    <script>
-        // === CONFIG - replace these with your worker URL and key ===
-        const PROXY_URL = "https://silent-brook-9ad3.dtech2j.workers.dev/"; // <-- set this to your worker URL
-        const PROXY_KEY = "dtech_secret"; // <-- set this to the same secret on the worker
-        const MAX_DISPLAY_CHARS = 5000000; // safety on client (not strict), optional
+  <!-- Reader -->
+  <div class="reader-overlay" id="readerOverlay">
+    <div class="reader-container">
+      <div class="reader-header">
+        <div id="readerBookTitle">Loading...</div>
+        <div>
+          <button id="decreaseFS">A-</button>
+          <button id="increaseFS">A+</button>
+          <button id="closeReaderBtn">✕ Close</button>
+        </div>
+      </div>
+      <div class="reader-content" id="readerContent"><div class="loading">Loading book content...</div></div>
+    </div>
+  </div>
 
-        let books = [];
-        let currentFontSize = 18;
-        window.currentBookUrl = '';
+  <script>
+  // CONFIG: set your worker URL and key
+  const PROXY_URL = "https://silent-brook-9ad3.dtech2j.workers.dev/"; // your worker
+  const PROXY_KEY = "dtech_secret"; // must match worker expectedKey
 
-        // Load books from data.txt
-        async function loadBooks() {
-            try {
-                const response = await fetch('data.txt');
-                const text = await response.text();
-                parseBooks(text);
-            } catch (error) {
-                console.error('Error loading data.txt:', error);
-                document.getElementById('booksGrid').innerHTML =
-                    '<div class="error">Error loading books data. Make sure data.txt is in the same folder.</div>';
-            }
+  let books = [];
+  let currentFontSize = 18;
+  window.currentBookUrl = '';
+
+  async function loadBooks() {
+    try {
+      const res = await fetch('data.txt', { cache: 'no-store' });
+      if (!res.ok) throw new Error('Failed to fetch data.txt: ' + res.status);
+      const txt = await res.text();
+      parseBooks(txt);
+    } catch (err) {
+      console.error('loadBooks error:', err);
+      document.getElementById('booksGrid').innerHTML = '<div class="error">Error loading data.txt — check console</div>';
+      document.getElementById('stats').textContent = '📚 0 books loaded • Use search and filters to find books';
+    }
+  }
+
+  function parseBooks(text) {
+    // More robust line-by-line parser. Keeps currentGenre and collects books until separator lines.
+    const lines = text.split(/\r?\n/);
+    let currentGenre = '';
+    let currentBook = null;
+    books = [];
+
+    for (let rawLine of lines) {
+      const line = rawLine.trim();
+      if (!line) continue;
+
+      // Genre header
+      if (line.includes('🎯 GENRE:')) {
+        // like "🎯 GENRE: ADVENTURE (4 books)"
+        const m = line.match(/🎯\s*GENRE:\s*([^\(]+)/i);
+        if (m) currentGenre = m[1].trim();
+        else currentGenre = line.split('🎯 GENRE:')[1]?.split('(')[0].trim() || currentGenre;
+        continue;
+      }
+
+      // Book start: "📖 BOOK 1: The Adventures..."
+      let bookStart = line.match(/^📖\s*BOOK\s*\d+\s*:\s*(.+)$/i);
+      if (bookStart) {
+        // push previous book if any
+        if (currentBook) {
+          books.push(currentBook);
         }
+        currentBook = { genre: currentGenre, title: bookStart[1].trim() };
+        continue;
+      }
 
-        function parseBooks(text) {
-            const lines = text.split('\\n');
-            let currentBook = null;
-            let inBookSection = false;
-            let currentGenre = '';
+      if (!currentBook) continue; // ignore lines until we hit a book start
 
-            for (const rawLine of lines) {
-                const line = rawLine.trim();
-                if (!line) continue;
+      // Fields inside a book block
+      if (line.includes('👤 Author:')) {
+        currentBook.author = line.split('👤 Author:')[1].trim();
+      } else if (line.includes('🆔 ID:')) {
+        currentBook.id = line.split('🆔 ID:')[1].trim();
+      } else if (line.includes('📊 Downloads:')) {
+        currentBook.downloads = line.split('📊 Downloads:')[1].trim();
+      } else if (line.includes('🌐 Language:')) {
+        currentBook.language = line.split('🌐 Language:')[1].trim();
+      } else if (line.includes('🖼️  Cover:') || line.includes('🖼️ Cover:')) {
+        // tolerate variations
+        currentBook.cover = line.split('🖼️')[1] ? line.split('🖼️')[1].replace(/^Cover:\s*/i, '').trim() : line.split('Cover:')[1]?.trim();
+      } else if (line.includes('📝 Text URL:')) {
+        currentBook.textUrl = line.split('📝 Text URL:')[1].trim();
+      } else if (line.includes('📄 Format:')) {
+        currentBook.format = line.split('📄 Format:')[1].trim();
+      } else if (line.includes('🏷️  Subjects:') || line.includes('🏷️ Subjects:')) {
+        currentBook.subjects = line.split('🏷️')[1] ? line.split('🏷️')[1].replace(/^Subjects?:\s*/i, '').trim() : '';
+      } else if (line.includes('📚 Bookshelves:')) {
+        currentBook.bookshelves = line.split('📚 Bookshelves:')[1].trim();
+      } else if (/^-{6,}/.test(line)) {
+        // separator line "-----" marks end of book block
+        if (currentBook) { books.push(currentBook); currentBook = null; }
+      } else {
+        // some additional lines we might want to attach (ignore for now)
+      }
+    }
 
-                if (line.includes('🎯 GENRE:')) {
-                    currentGenre = line.split('🎯 GENRE:')[1].split('(')[0].trim();
-                    continue;
-                }
+    // push last book if file ended without separator
+    if (currentBook) books.push(currentBook);
 
-                if (line.includes('📖 BOOK')) {
-                    if (currentBook) books.push(currentBook);
-                    currentBook = { genre: currentGenre, title: line.split('📖 BOOK')[1].split(':')[1].trim() };
-                    inBookSection = true;
-                    continue;
-                }
+    // Normalize and defaults
+    books = books.map(b => ({
+      title: b.title || 'Untitled',
+      author: b.author || 'Unknown',
+      genre: b.genre || 'Unknown',
+      textUrl: b.textUrl || '',
+      cover: b.cover || '',
+      downloads: b.downloads || '0',
+      subjects: b.subjects || '',
+      id: b.id || '',
+      language: b.language || '',
+      bookshelves: b.bookshelves || ''
+    }));
 
-                if (!inBookSection || !currentBook) continue;
+    console.log('Parsed books count:', books.length);
+    if (books.length === 0) {
+      console.warn('No books parsed — sample of first 40 chars of data.txt:', text.slice(0,40));
+    }
 
-                if (line.includes('👤 Author:')) {
-                    currentBook.author = line.split('👤 Author:')[1].trim();
-                } else if (line.includes('🆔 ID:')) {
-                    currentBook.id = line.split('🆔 ID:')[1].trim();
-                } else if (line.includes('📊 Downloads:')) {
-                    currentBook.downloads = line.split('📊 Downloads:')[1].trim();
-                } else if (line.includes('🖼️  Cover:')) {
-                    currentBook.cover = line.split('🖼️  Cover:')[1].trim();
-                } else if (line.includes('📝 Text URL:')) {
-                    currentBook.textUrl = line.split('📝 Text URL:')[1].trim();
-                } else if (line.includes('📄 Format:')) {
-                    currentBook.format = line.split('📄 Format:')[1].trim();
-                } else if (line.includes('🏷️  Subjects:')) {
-                    currentBook.subjects = line.split('🏷️  Subjects:')[1].trim();
-                } else if (line.includes('📚 Bookshelves:')) {
-                    currentBook.bookshelves = line.split('📚 Bookshelves:')[1].trim();
-                }
+    displayBooks(books);
+    updateStats();
+    populateGenres();
+  }
 
-                if (line.includes('--------------------------------------------------')) {
-                    inBookSection = false;
-                }
-            }
+  function displayBooks(list) {
+    const grid = document.getElementById('booksGrid');
+    grid.innerHTML = '';
+    if (!list || list.length === 0) {
+      grid.innerHTML = '<div class="no-books">No books found matching your search.</div>';
+      return;
+    }
 
-            if (currentBook) books.push(currentBook);
+    list.forEach(book => {
+      const card = document.createElement('div');
+      card.className = 'book-card';
+      card.addEventListener('click', () => openBook(book.textUrl, book.title));
 
-            // fill defaults
-            books = books.map(b => ({
-                title: b.title || 'Untitled',
-                author: b.author || 'Unknown',
-                genre: b.genre || 'Unknown',
-                textUrl: b.textUrl || '',
-                cover: b.cover || '',
-                downloads: b.downloads || '0',
-                subjects: b.subjects || '',
-                id: b.id || ''
-            }));
+      const cover = document.createElement('div');
+      cover.className = 'book-cover';
+      if (book.cover) {
+        // set as background image; fallback to text if image fails
+        cover.style.backgroundImage = `url("${book.cover}")`;
+      } else {
+        cover.textContent = book.title.length > 30 ? book.title.slice(0,30) + '...' : book.title;
+      }
 
-            displayBooks(books);
-            updateStats();
-            populateGenres();
-        }
+      const t = document.createElement('div');
+      t.className = 'book-title'; t.textContent = book.title;
 
-        function displayBooks(booksToShow) {
-            const grid = document.getElementById('booksGrid');
-            grid.innerHTML = '';
+      const a = document.createElement('div');
+      a.className = 'book-author'; a.textContent = book.author;
 
-            if (!booksToShow || booksToShow.length === 0) {
-                grid.innerHTML = '<div class="no-books">No books found matching your search.</div>';
-                return;
-            }
+      const meta = document.createElement('div');
+      meta.className = 'book-meta';
+      meta.innerHTML = `📊 ${book.downloads} downloads<br>🏷️ ${book.genre}`;
 
-            booksToShow.forEach(book => {
-                const card = document.createElement('div');
-                card.className = 'book-card';
+      const btn = document.createElement('button');
+      btn.className = 'read-btn'; btn.textContent = '📖 Read Book';
+      btn.addEventListener('click', (ev) => { ev.stopPropagation(); openBook(book.textUrl, book.title); });
 
-                // click opens book
-                card.addEventListener('click', () => openBook(book.textUrl, book.title));
+      card.appendChild(cover);
+      card.appendChild(t);
+      card.appendChild(a);
+      card.appendChild(meta);
+      card.appendChild(btn);
 
-                const cover = document.createElement('div');
-                cover.className = 'book-cover';
-                if (book.cover) {
-                    cover.style.backgroundImage = `url('${book.cover}')`;
-                } else {
-                    cover.textContent = book.title.length > 30 ? book.title.substring(0, 30) + '...' : book.title;
-                }
+      grid.appendChild(card);
+    });
+  }
 
-                const titleDiv = document.createElement('div');
-                titleDiv.className = 'book-title';
-                titleDiv.textContent = book.title;
+  function updateStats() {
+    document.getElementById('stats').textContent = `📚 ${books.length} books loaded • Use search and filters to find books`;
+  }
 
-                const authorDiv = document.createElement('div');
-                authorDiv.className = 'book-author';
-                authorDiv.textContent = book.author;
+  function populateGenres() {
+    const select = document.getElementById('genreFilter');
+    select.innerHTML = '<option value="">All Genres</option>';
+    const unique = [...new Set(books.map(b => b.genre).filter(Boolean))].sort();
+    unique.forEach(g => {
+      const o = document.createElement('option'); o.value = g; o.textContent = g; select.appendChild(o);
+    });
+  }
 
-                const metaDiv = document.createElement('div');
-                metaDiv.className = 'book-meta';
-                metaDiv.innerHTML = `📊 ${book.downloads} downloads<br>🏷️ ${book.genre}`;
+  // filtering
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+  document.getElementById('genreFilter').addEventListener('change', applyFilters);
 
-                const readBtn = document.createElement('button');
-                readBtn.className = 'read-btn';
-                readBtn.textContent = '📖 Read Book';
-                readBtn.addEventListener('click', (ev) => {
-                    ev.stopPropagation();
-                    openBook(book.textUrl, book.title);
-                });
+  function applyFilters() {
+    const q = document.getElementById('searchInput').value.trim().toLowerCase();
+    const genre = document.getElementById('genreFilter').value;
+    const filtered = books.filter(b => {
+      const matchesQ = !q || (b.title + ' ' + b.author + ' ' + (b.subjects||'')).toLowerCase().includes(q);
+      const matchesGenre = !genre || b.genre === genre;
+      return matchesQ && matchesGenre;
+    });
+    displayBooks(filtered);
+  }
 
-                card.appendChild(cover);
-                card.appendChild(titleDiv);
-                card.appendChild(authorDiv);
-                card.appendChild(metaDiv);
-                card.appendChild(readBtn);
+  // Reader controls
+  document.getElementById('decreaseFS').addEventListener('click', () => changeFontSize(-1));
+  document.getElementById('increaseFS').addEventListener('click', () => changeFontSize(1));
+  document.getElementById('closeReaderBtn').addEventListener('click', closeReader);
+  document.getElementById('readerOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeReader(); });
 
-                grid.appendChild(card);
-            });
-        }
+  async function openBook(textUrl, title) {
+    const overlay = document.getElementById('readerOverlay');
+    const content = document.getElementById('readerContent');
+    const titleDiv = document.getElementById('readerBookTitle');
 
-        function updateStats() {
-            const stats = document.getElementById('stats');
-            stats.textContent = `📚 ${books.length} books loaded • Use search and filters to find books`;
-        }
+    titleDiv.textContent = title || 'Loading...';
+    overlay.style.display = 'flex';
+    content.innerHTML = '<div class="loading">Loading book content...</div>';
+    window.currentBookUrl = textUrl || '';
 
-        function populateGenres() {
-            const genreFilter = document.getElementById('genreFilter');
-            const genres = [...new Set(books.map(book => book.genre).filter(Boolean))].sort();
-            genres.forEach(genre => {
-                const option = document.createElement('option');
-                option.value = genre;
-                option.textContent = genre;
-                genreFilter.appendChild(option);
-            });
-        }
+    if (!textUrl) {
+      content.innerHTML = '<div class="error">No text URL available for this book.</div>';
+      return;
+    }
 
-        // Search and filter
-        document.getElementById('searchInput').addEventListener('input', filterBooks);
-        document.getElementById('genreFilter').addEventListener('change', filterBooks);
+    try {
+      // Build proxy request to worker
+      const proxyUrl = `${PROXY_URL}?url=${encodeURIComponent(textUrl)}&key=${encodeURIComponent(PROXY_KEY)}`;
+      const resp = await fetch(proxyUrl);
+      if (!resp.ok) {
+        const body = await resp.text().catch(()=>'');
+        throw new Error(`Proxy fetch failed: ${resp.status} ${body}`);
+      }
+      const text = await resp.text();
+      const cleaned = cleanBookContent(text, title);
+      content.innerHTML = `<div class="book-content" style="font-size:${currentFontSize}px">${cleaned}</div>`;
+    } catch (err) {
+      console.error('openBook error:', err);
+      content.innerHTML = `<div class="error">Failed to load book: ${escapeHtml(err.message)}<br><br>
+        <button onclick="window.open('${encodeURIComponent(textUrl).replace(/%20/g,' ')}','_blank')">Open original file</button>
+      </div>`;
+    }
+  }
 
-        function filterBooks() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const genreValue = document.getElementById('genreFilter').value;
-            const filtered = books.filter(book => {
-                const matchesSearch = (book.title || '').toLowerCase().includes(searchTerm) ||
-                                      (book.author || '').toLowerCase().includes(searchTerm);
-                const matchesGenre = !genreValue || book.genre === genreValue;
-                return matchesSearch && matchesGenre;
-            });
-            displayBooks(filtered);
-        }
+  function cleanBookContent(text, title) {
+    let content = text || '';
+    // Remove Gutenberg headers/footers (best-effort)
+    const startMarkers = [
+      '*** START OF THE PROJECT GUTENBERG EBOOK',
+      '*** START OF THIS PROJECT GUTENBERG EBOOK',
+      '***START OF THE PROJECT GUTENBERG EBOOK',
+      'Produced by',
+      'Transcriber'
+    ];
+    let startIdx = -1;
+    for (const m of startMarkers) { startIdx = content.indexOf(m); if (startIdx !== -1) { content = content.substring(startIdx); break; } }
 
-        // Reader functions
-        document.getElementById('decreaseFS').addEventListener('click', () => changeFontSize(-1));
-        document.getElementById('increaseFS').addEventListener('click', () => changeFontSize(1));
-        document.getElementById('closeReaderBtn').addEventListener('click', closeReader);
+    // remove common metadata blocks
+    content = content.replace(/The Project Gutenberg eBook of [\s\S]*?\n\n/gi, '');
+    content = content.replace(/This ebook is for the use of anyone anywhere[\s\S]*?www\.gutenberg\.org\./gi, '');
+    content = content.replace(/Title: [\s\S]*?\n(Author: [\s\S]*?\n)?/gi, '');
 
-        document.getElementById('readerOverlay').addEventListener('click', function(e) {
-            if (e.target === this) closeReader();
-        });
+    // Trim footer
+    const endMarkers = ['*** END OF THE PROJECT GUTENBERG EBOOK', 'End of the Project Gutenberg'];
+    for (const m of endMarkers) { const i = content.indexOf(m); if (i !== -1) { content = content.substring(0,i); break; } }
 
-        async function openBook(textUrl, title) {
-            const overlay = document.getElementById('readerOverlay');
-            const contentDiv = document.getElementById('readerContent');
-            const titleDiv = document.getElementById('readerBookTitle');
+    // Convert to paragraphs / headings
+    const lines = content.split(/\r?\n/);
+    const out = [];
+    out.push(`<h1>${escapeHtml(title || 'Untitled')}</h1>`);
+    out.push('<div style="text-align:center;margin:20px 0;padding:10px;background:#f8f9fa;border-radius:8px;"><em>From Project Gutenberg • Free eBook</em></div>');
 
-            titleDiv.textContent = title;
-            overlay.style.display = 'flex';
-            contentDiv.innerHTML = '<div class="loading">Loading book content...</div>';
-            window.currentBookUrl = textUrl;
+    let para = [];
+    for (let ln of lines) {
+      ln = ln.trim();
+      if (!ln) {
+        if (para.length) { out.push(`<p>${escapeHtml(para.join(' '))}</p>`); para = []; }
+        continue;
+      }
+      // chapter heading detection
+      if ((ln === ln.toUpperCase() && ln.length < 120 && !/[.,]/.test(ln)) || ln.startsWith('CHAPTER') || ln.startsWith('Chapter')) {
+        if (para.length) { out.push(`<p>${escapeHtml(para.join(' '))}</p>`); para = []; }
+        out.push(`<h2>${escapeHtml(ln)}</h2>`);
+      } else {
+        para.push(ln);
+      }
+    }
+    if (para.length) out.push(`<p>${escapeHtml(para.join(' '))}</p>`);
 
-            try {
-                // Build proxy fetch URL
-                if (!textUrl) throw new Error('No text URL provided for this book.');
+    if (out.length <= 3) {
+      return `<div class="error"><p>Could not extract readable content from this book.</p>
+        <p><button onclick="window.open('${window.currentBookUrl}','_blank')">Open original file</button></p></div>`;
+    }
+    return out.join('\n');
+  }
 
-                const encoded = encodeURIComponent(textUrl);
-                const proxyFetchUrl = `${PROXY_URL}?url=${encoded}&key=${encodeURIComponent(PROXY_KEY)}`;
+  function escapeHtml(s) {
+    return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
 
-                const resp = await fetch(proxyFetchUrl, { method: 'GET' });
-                if (!resp.ok) {
-                    throw new Error(`HTTP ${resp.status} - ${await resp.text()}`);
-                }
+  function closeReader() {
+    document.getElementById('readerOverlay').style.display = 'none';
+    document.getElementById('readerContent').innerHTML = '';
+  }
 
-                const text = await resp.text();
+  function changeFontSize(delta) {
+    currentFontSize = Math.max(14, Math.min(30, currentFontSize + delta));
+    const c = document.querySelector('.book-content');
+    if (c) c.style.fontSize = currentFontSize + 'px';
+  }
 
-                if (!text || text.length < 20) {
-                    throw new Error('Received empty or too-short content.');
-                }
-
-                if (text.length > MAX_DISPLAY_CHARS) {
-                    // safety: do not crash the browser if file is too big
-                    contentDiv.innerHTML = `
-                        <div class="error">
-                            Book too large to render in browser (${(text.length/1024/1024).toFixed(2)}MB).<br>
-                            <button onclick="window.open('${textUrl}', '_blank')"
-                                style="padding:10px 16px; background:#3498db; color:#fff; border:none; border-radius:6px;">
-                                Open original file in new tab
-                            </button>
-                        </div>`;
-                    return;
-                }
-
-                const cleanedContent = cleanBookContent(text, title);
-                contentDiv.innerHTML = `<div class="book-content" style="font-size:${currentFontSize}px;">${cleanedContent}</div>`;
-            } catch (error) {
-                console.error('Error loading book:', error);
-                contentDiv.innerHTML = `
-                    <div class="error">
-                        Failed to load book content: ${error.message}<br><br>
-                        <button onclick="window.open('${textUrl}', '_blank')" style="
-                            padding: 10px 20px;
-                            background: #3498db;
-                            color: white;
-                            border: none;
-                            border-radius: 5px;
-                            cursor: pointer;
-                        ">
-                            Open in New Tab Instead
-                        </button>
-                    </div>
-                `;
-            }
-        }
-
-        function cleanBookContent(text, title) {
-            // (same cleaning logic you already had — kept mostly intact)
-            let content = text;
-
-            const startMarkers = [
-                '*** START OF THE PROJECT GUTENBERG EBOOK',
-                '***START OF THE PROJECT GUTENBERG EBOOK',
-                '*** START OF THIS PROJECT GUTENBERG EBOOK',
-                'Produced by',
-                'Transcriber'
-            ];
-
-            let startIndex = -1;
-            for (const marker of startMarkers) {
-                startIndex = content.indexOf(marker);
-                if (startIndex !== -1) break;
-            }
-
-            if (startIndex !== -1) {
-                const afterStart = content.substring(startIndex);
-                const firstLineBreak = afterStart.indexOf('\\n');
-                content = firstLineBreak !== -1 ? afterStart.substring(firstLineBreak + 1) : afterStart;
-            }
-
-            const headerPatterns = [
-                /The Project Gutenberg eBook of .+?\\n\\n/gs,
-                /This ebook is for the use of anyone anywhere.+?www\\.gutenberg\\.org\\./gs,
-                /Title: .+?\\nAuthor: .+?\\nRelease date: .+?\\n/gs,
-                /Language: .+?\\nCredits: .+?\\n/gs
-            ];
-            headerPatterns.forEach(p => content = content.replace(p, ''));
-
-            const storyStartMarkers = ['CHAPTER', 'Chapter', 'I\\n', 'THE\\n', 'It was', 'In the', 'Once upon'];
-            for (const marker of storyStartMarkers) {
-                const idx = content.indexOf(marker);
-                if (idx !== -1 && idx < 1000) { content = content.substring(idx); break; }
-            }
-
-            const endMarkers = [
-                '*** END OF THE PROJECT GUTENBERG EBOOK',
-                '*** END OF THIS PROJECT GUTENBERG EBOOK',
-                'End of the Project Gutenberg',
-                'End of Project Gutenberg'
-            ];
-            for (const m of endMarkers) {
-                const idx = content.indexOf(m);
-                if (idx !== -1) { content = content.substring(0, idx); break; }
-            }
-
-            // Convert lines to paragraphs and headings
-            const lines = content.split('\\n');
-            let html = [];
-            let para = [];
-
-            html.push(`<h1>${escapeHtml(title)}</h1>`);
-            html.push('<div style="text-align:center;margin:30px 0;padding:20px;background:#f8f9fa;border-radius:10px;"><em>From Project Gutenberg • Free eBook</em></div>');
-
-            for (let i=0;i<lines.length;i++){
-                const line = lines[i].trim();
-                if (!line) {
-                    if (para.length) { html.push(`<p>${escapeHtml(para.join(' '))}</p>`); para = []; }
-                    continue;
-                }
-
-                if ((line === line.toUpperCase() && line.length < 100 && !line.includes('.') && !line.includes(',')) ||
-                    line.startsWith('CHAPTER') || line.startsWith('Chapter')) {
-                    if (para.length) { html.push(`<p>${escapeHtml(para.join(' '))}</p>`); para = []; }
-                    html.push(`<h2 class="chapter">${escapeHtml(line)}</h2>`);
-                } else {
-                    para.push(line);
-                }
-            }
-
-            if (para.length) html.push(`<p>${escapeHtml(para.join(' '))}</p>`);
-
-            if (html.length <= 3) {
-                return `<div class="error"><p>Could not extract readable content from this book.</p>
-                    <p>The book file might be in a different format.</p>
-                    <button onclick="window.open('${window.currentBookUrl}','_blank')" style="padding:10px 16px;background:#3498db;color:#fff;border:none;border-radius:6px;">View Original File</button>
-                </div>`;
-            }
-
-            return html.join('\\n');
-        }
-
-        function escapeHtml(s) {
-            return (s+'').replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; });
-        }
-
-        function closeReader() {
-            document.getElementById('readerOverlay').style.display = 'none';
-            document.getElementById('readerContent').innerHTML = '';
-        }
-
-        function changeFontSize(delta) {
-            currentFontSize = Math.max(14, Math.min(28, currentFontSize + delta));
-            const bookContent = document.querySelector('.book-content');
-            if (bookContent) bookContent.style.fontSize = currentFontSize + 'px';
-        }
-
-        // Start
-        window.addEventListener('load', loadBooks);
-    </script>
+  // start
+  window.addEventListener('load', () => { loadBooks(); });
+  </script>
 </body>
 </html>
