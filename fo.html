@@ -124,6 +124,38 @@
     font-size:15px;
   }
 
+  .loading-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+    padding: 10px;
+    background: rgba(139, 107, 76, 0.1);
+    border-radius: 8px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 8px;
+    background: #e0d5c5;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #8b6b4c;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    font-size: 14px;
+    color: #6d533c;
+    min-width: 120px;
+    text-align: right;
+  }
+
   /* Home Page Design - Compact Two-Column Layout */
   #homeSection {
     background: linear-gradient(135deg, #f9f5f1 0%, #e8dfd3 100%);
@@ -923,6 +955,12 @@
   <div id="homeSection">
     <h2 class="section-title">Browse Collection</h2>
     <div class="stats" id="stats">Loading books...</div>
+    <div id="loadingProgress" class="loading-progress" style="display: none;">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+      <div class="progress-text" id="progressText">Loading...</div>
+    </div>
     <div id="homeContent"></div>
     <button id="loadMoreGenres" class="load-more-genres-btn" style="display:none">Load More Genres</button>
   </div>
@@ -974,8 +1012,9 @@ const WORDS_PER_PAGE_DEFAULT = 500;         // Change this value to adjust words
 const MIN_BALANCE_RATIO = 0.40;             // minimum fraction for last page before rebalancing
 const FONT_SIZE_DEFAULT = 9;                // Change this value to adjust font size
 const BOOKS_PER_GENRE = 10;                 // Number of books to show per genre initially
-const GENRES_PER_LOAD = 10;                 // Number of genres to show initially
+const GENRES_PER_LOAD = 5;                  // Number of genres to show initially (reduced for faster loading)
 const GENRES_PER_FILTER = 40;               // Number of genres to show in filter dropdown
+const CHUNK_SIZE = 5000;                    // Size of data chunks to process at once
 
 /* STATE */
 let books = [];
@@ -988,6 +1027,9 @@ let pageIndicatorTimeout;
 let genreDisplayCounts = {}; // Track how many books are shown per genre
 let genresToShow = GENRES_PER_LOAD; // Track how many genres to display
 let rawData = ""; // Store the raw data for lazy parsing
+let processedData = ""; // Store already processed data
+let searchIndex = {}; // Store search index for faster searching
+let isProcessing = false; // Track if we're currently processing data
 
 /* UI refs */
 const booksGrid = document.getElementById('booksGrid');
@@ -999,6 +1041,9 @@ const readerEl = document.getElementById('reader');
 const readerTitle = document.getElementById('readerTitle');
 const readerFooter = document.getElementById('readerFooter');
 const loadMoreGenresBtn = document.getElementById('loadMoreGenres');
+const loadingProgress = document.getElementById('loadingProgress');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
 
 /* Tabs */
 const tabHome = document.getElementById('tab-home');
@@ -1025,20 +1070,93 @@ window.addEventListener('load', loadBooks);
 
 async function loadBooks(){
   try {
+    loadingProgress.style.display = 'flex';
+    progressText.textContent = 'Loading data file...';
+    
     const r = await fetch('data.txt', {cache:'no-store'});
     if(!r.ok) throw new Error('Failed to fetch data.txt');
-    rawData = await r.text();
-    parseDataTxt(rawData, true); // Initial parse with limited data
+    
+    const reader = r.body.getReader();
+    const decoder = new TextDecoder();
+    let receivedLength = 0;
+    let chunks = [];
+    
+    while(true) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      
+      chunks.push(value);
+      receivedLength += value.length;
+      
+      // Update progress
+      const progressPercent = Math.min(50, (receivedLength / (2 * 1024 * 1024)) * 50); // Assume 2MB file
+      progressFill.style.width = `${progressPercent}%`;
+      progressText.textContent = `Loading data... ${Math.round(progressPercent)}%`;
+    }
+    
+    rawData = chunks.map(chunk => decoder.decode(chunk)).join('');
+    progressFill.style.width = '50%';
+    progressText.textContent = 'Processing data...';
+    
+    // Start processing data in chunks
+    processDataChunk();
   } catch(err){
     console.error('loadBooks', err);
     homeContent.innerHTML = '<div class="empty-note">Error loading data.txt — open console.</div>';
     statsEl.textContent = '📚 0 books loaded';
+    loadingProgress.style.display = 'none';
   }
 }
 
-/* Parse data.txt with lazy loading support */
-function parseDataTxt(text, initialLoad = false){
-  const lines = text.split(/\r?\n/);
+/* Process data in chunks to avoid freezing */
+function processDataChunk() {
+  if (isProcessing) return;
+  isProcessing = true;
+  
+  // If we have no processed data yet, start from the beginning
+  if (processedData === "") {
+    processedData = rawData;
+  }
+  
+  // Process a chunk of data
+  const chunkEnd = Math.min(CHUNK_SIZE, processedData.length);
+  const chunkToProcess = processedData.substring(0, chunkEnd);
+  const remainingData = processedData.substring(chunkEnd);
+  
+  // Parse the chunk
+  parseDataChunk(chunkToProcess);
+  
+  // Update progress
+  const progressPercent = 50 + (50 * (rawData.length - remainingData.length) / rawData.length);
+  progressFill.style.width = `${progressPercent}%`;
+  progressText.textContent = `Processing data... ${Math.round(progressPercent)}%`;
+  
+  // If there's more data to process, schedule next chunk
+  if (remainingData.length > 0) {
+    processedData = remainingData;
+    setTimeout(() => {
+      isProcessing = false;
+      processDataChunk();
+    }, 10); // Small delay to allow UI updates
+  } else {
+    // Finished processing
+    loadingProgress.style.display = 'none';
+    isProcessing = false;
+    statsEl.textContent = `📚 ${books.length} books loaded • Use search/genre`;
+    
+    // Show/hide load more genres button
+    const totalGenres = countGenresInData(rawData);
+    if (totalGenres > genresToShow) {
+      loadMoreGenresBtn.style.display = 'block';
+    } else {
+      loadMoreGenresBtn.style.display = 'none';
+    }
+  }
+}
+
+/* Parse a chunk of data.txt */
+function parseDataChunk(chunk, append = false) {
+  const lines = chunk.split(/\r?\n/);
   let currentGenre = '';
   let currentBook = null;
   const parsed = [];
@@ -1053,8 +1171,8 @@ function parseDataTxt(text, initialLoad = false){
       currentGenre = m ? m[1].trim() : currentGenre;
       genreCount++;
       
-      // If initial load and we've reached our genre limit, stop parsing
-      if (initialLoad && genreCount > genresToShow) {
+      // If we've reached our genre limit, stop parsing
+      if (genreCount > genresToShow) {
         break;
       }
       continue;
@@ -1065,8 +1183,8 @@ function parseDataTxt(text, initialLoad = false){
         parsed.push(currentBook);
         bookCount++;
         
-        // If initial load and we've reached our book limit, stop parsing
-        if (initialLoad && bookCount >= BOOKS_PER_GENRE * genresToShow) {
+        // If we've reached our book limit, stop parsing
+        if (bookCount >= BOOKS_PER_GENRE * genresToShow) {
           break;
         }
       }
@@ -1086,33 +1204,24 @@ function parseDataTxt(text, initialLoad = false){
       bookCount++;
       currentBook = null; 
       
-      // If initial load and we've reached our book limit, stop parsing
-      if (initialLoad && bookCount >= BOOKS_PER_GENRE * genresToShow) {
+      // If we've reached our book limit, stop parsing
+      if (bookCount >= BOOKS_PER_GENRE * genresToShow) {
         break;
       }
     }
   }
   if (currentBook) parsed.push(currentBook);
 
-  // If this is not the initial load, append to existing books
-  if (!initialLoad) {
+  // If we're appending to existing books
+  if (append) {
     books = books.concat(parsed);
   } else {
     books = parsed;
   }
 
   renderHomePage();
-  statsEl.textContent = `📚 ${books.length} books loaded • Use search/genre`;
   populateGenreFilter();
   renderContinueList();
-  
-  // Show/hide load more genres button
-  const totalGenres = countGenresInData(rawData);
-  if (totalGenres > genresToShow) {
-    loadMoreGenresBtn.style.display = 'block';
-  } else {
-    loadMoreGenresBtn.style.display = 'none';
-  }
 }
 
 /* Count total genres in the data file */
@@ -1133,7 +1242,8 @@ function countGenresInData(text) {
 /* Load more genres */
 loadMoreGenresBtn.addEventListener('click', () => {
   genresToShow += GENRES_PER_LOAD;
-  parseDataTxt(rawData, false); // Parse more data without resetting
+  processedData = rawData; // Reset to process from beginning with new limit
+  processDataChunk();
 });
 
 /* Render home page with genre sections */
@@ -1309,12 +1419,67 @@ function populateGenreFilter(){
   });
 }
 
-document.getElementById('searchInput').addEventListener('input', ()=>{
-  const q = document.getElementById('searchInput').value.trim().toLowerCase();
-  const genre = document.getElementById('genreFilter').value;
-  const filtered = books.filter(b => ((b.title + ' ' + (b.author||'') + ' ' + (b.genre||'')).toLowerCase().includes(q) && (!genre || b.genre===genre)));
-  renderHomePage(filtered);
+// Debounced search function
+let searchTimeout;
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    const q = e.target.value.trim().toLowerCase();
+    const genre = document.getElementById('genreFilter').value;
+    
+    if (q.length < 2 && !genre) {
+      renderHomePage();
+      return;
+    }
+    
+    // Show loading indicator for search
+    loadingProgress.style.display = 'flex';
+    progressFill.style.width = '0%';
+    progressText.textContent = 'Searching...';
+    
+    // Process search in chunks to avoid freezing
+    processSearch(q, genre);
+  }, 300);
 });
+
+function processSearch(query, genreFilter) {
+  const filtered = [];
+  let processed = 0;
+  const totalBooks = books.length;
+  const chunkSize = 100; // Process 100 books at a time
+  
+  function processChunk() {
+    const chunkEnd = Math.min(processed + chunkSize, totalBooks);
+    
+    for (let i = processed; i < chunkEnd; i++) {
+      const book = books[i];
+      const searchText = (book.title + ' ' + (book.author||'') + ' ' + (book.genre||'')).toLowerCase();
+      
+      if ((!query || searchText.includes(query)) && (!genreFilter || book.genre === genreFilter)) {
+        filtered.push(book);
+      }
+    }
+    
+    processed = chunkEnd;
+    
+    // Update progress
+    const progressPercent = (processed / totalBooks) * 100;
+    progressFill.style.width = `${progressPercent}%`;
+    progressText.textContent = `Searching... ${Math.round(progressPercent)}%`;
+    
+    if (processed < totalBooks) {
+      // Process next chunk on next frame
+      setTimeout(processChunk, 0);
+    } else {
+      // Search complete
+      loadingProgress.style.display = 'none';
+      renderHomePage(filtered);
+      statsEl.textContent = `📚 Found ${filtered.length} books matching your search`;
+    }
+  }
+  
+  processChunk();
+}
 
 document.getElementById('genreFilter').addEventListener('change', ()=> document.getElementById('searchInput').dispatchEvent(new Event('input')));
 
